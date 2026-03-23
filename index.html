@@ -479,8 +479,9 @@ async function callAPI(userText, isFirst) {
   const API_KEY = ""; 
   const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-  try {
-    const res = await fetch(URL, {
+ try {
+    // On appelle notre "pont" sur Vercel au lieu de Google en direct
+    const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -492,19 +493,15 @@ async function callAPI(userText, isFirst) {
     const data = await res.json();
     removeTyping(typing);
 
-    // On récupère le texte que l'IA a généré
     const reply = data.candidates[0].content.parts[0].text;
-    
-    // On l'ajoute à l'historique
     history.push({ role: 'model', parts: [{ text: reply }] });
     addMsg('coach', reply);
 
   } catch (e) {
-    console.error("Erreur détaillée :", e);
+    console.error(e);
     removeTyping(typing);
-    addMsg('coach', "Aïe, j'ai un souci technique. Vérifie si ta clé API est bien collée !");
+    addMsg('coach', "Connexion établie, mais l'IA ne répond pas encore. Vérifie ta variable GEMINI_API_KEY sur Vercel !");
   }
-
   isLoading = false;
   document.getElementById('btn-send').disabled = false;
   document.getElementById('chat-input').focus();
