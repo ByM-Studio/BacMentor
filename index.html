@@ -466,20 +466,49 @@ async function sendMessage(){
   await callAPI(txt,false);
 }
 
-async function callAPI(userText,isFirst){
-  isLoading=true;document.getElementById('btn-send').disabled=true;
-  if(!isFirst)addMsg('user',userText);
-  history.push({role:'user',content:userText});
-  const typing=addTyping();
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildSystem(profile),messages:history})});
-    const data=await res.json();
+async function callAPI(userText, isFirst) {
+  isLoading = true;
+  document.getElementById('btn-send').disabled = true;
+  if (!isFirst) addMsg('user', userText);
+  
+  // Formatage pour l'IA de Google (Gemini)
+  history.push({ role: 'user', parts: [{ text: userText }] });
+  const typing = addTyping();
+
+  // METS TA CLÉ ICI (Garde bien les deux petits ' ')
+  const API_KEY = 'AIzaSyDXZCQ7bSUzRR0a7sDEKxyj4B62bV6xseA'; 
+  const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+  try {
+    const res = await fetch(URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: history,
+        systemInstruction: { parts: [{ text: buildSystem(profile) }] }
+      })
+    });
+
+    const data = await res.json();
     removeTyping(typing);
-    const reply=data.content?.[0]?.text||"Une erreur s'est produite, réessaie !";
-    history.push({role:'assistant',content:reply});
-    addMsg('coach',reply);
-  }catch(e){removeTyping(typing);addMsg('coach','⚠️ Connexion impossible. Vérifie ta connexion et réessaie.');}
-  isLoading=false;document.getElementById('btn-send').disabled=false;document.getElementById('chat-input').focus();
+
+    // On récupère le texte que l'IA a généré
+    const reply = data.candidates[0].content.parts[0].text;
+    
+    // On l'ajoute à l'historique
+    history.push({ role: 'model', parts: [{ text: reply }] });
+    addMsg('coach', reply);
+
+  } catch (e) {
+    console.error("Erreur détaillée :", e);
+    removeTyping(typing);
+    addMsg('coach', "Aïe, j'ai un souci technique. Vérifie si ta clé API est bien collée !");
+  }
+
+  isLoading = false;
+  document.getElementById('btn-send').disabled = false;
+  document.getElementById('chat-input').focus();
+}
 }
 
 function addMsg(role,text){
