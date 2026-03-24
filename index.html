@@ -475,7 +475,7 @@ async function callAPI(userText, isFirst) {
   const typing = addTyping();
 
   try {
-    const res = await fetch('/api/chat', {
+    const res = await fetch('/api/chat', { // NE PAS CHANGER CETTE LIGNE
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -487,11 +487,15 @@ async function callAPI(userText, isFirst) {
     const data = await res.json();
     removeTyping(typing);
 
-    if (data.candidates && data.candidates[0].content) {
-      const reply = data.candidates[0].content.parts[0].text;
-      history.push({ role: 'model', parts: [{ text: reply }] });
-      addMsg('coach', reply);
-    } else {
+    // Extraction sécurisée de la réponse
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur de réponse.";
+    history.push({ role: 'model', parts: [{ text: reply }] });
+    addMsg('coach', reply);
+  } catch (e) {
+    removeTyping(typing);
+    addMsg('coach', "Erreur : Vérifie que le dossier 'api' est bien présent sur Vercel !");
+  }
+  else {
       const errMsg = data.error ? data.error.message : "Réponse inattendue de l'IA";
       throw new Error(errMsg);
     }
