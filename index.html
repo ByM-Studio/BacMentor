@@ -495,16 +495,6 @@ async function callAPI(userText, isFirst) {
     removeTyping(typing);
     addMsg('coach', "Erreur : Vérifie que le dossier 'api' est bien présent sur Vercel !");
   }
-  else {
-      const errMsg = data.error ? data.error.message : "Réponse inattendue de l'IA";
-      throw new Error(errMsg);
-    }
-
-  } catch (e) {
-    console.error("Erreur :", e);
-    removeTyping(typing);
-    addMsg('coach', `⚠️ Erreur : ${e.message}`);
-  }
 
   isLoading = false;
   document.getElementById('btn-send').disabled = false;
