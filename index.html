@@ -264,7 +264,7 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
         </div>
         <div class="field">
           <label>Matières à travailler</label>
-          <div class="chips"><div class="chip" data-val="Mathématiques">Maths</div><div class="chip" data-val="Physique-Chimie">Physique</div><div class="chip" data-val="NSI">NSI</div><div class="chip" data-val="SIN / STI2D">SIN</div><div class="chip" data-val="Français">Français</div><div class="chip" data-val="Histoire-Géo">Hist-Géo</div><div class="chip" data-val="SVT">SVT</div><div class="chip" data-val="Anglais">Anglais</div><div class="chip" data-val="Philosophie">Philo</div></div>
+          <div class="chips"><div class="chip" data-val="Mathématiques">Maths</div><div class="chip" data-val="Physique-Chimie">Physique</div><div class="chip" data-val="NSI">NSI</div><div class="chip" data-val="SIN / STI2D">SIN</div><div class="chip" data-val="Français">Français</div><div class="chip" data-val="Histoire-Géo">Hist-Géo</div><div class="chip" data-val="SVT">SVT</div><div class="chip" data-val="Anglais">Anglais</div><div class="chip" data-val="Philosophie">Philo</div><div class="chip" data-val="ITEC / STI2D">ITEC</div><div class="chip" data-val="AC / STI2D">AC</div><div class="chip" data-val="HLP / GENERALE">HLP</div><div class="chip" data-val="HGGSP / GENERALE">HGGSP</div><div class="chip" data-val="LLCE / GENERALE">LLCE</div><div class="chip" data-val="SES / GENERALE">SES</div><div class="chip" data-val="ECO-GESTION / STMG">Eco-Gestion</div><div class="chip" data-val="MANAGEMENT / STMG">Management</div></div>
         </div>
         <div class="field">
           <label>Ton niveau actuel</label>
@@ -471,16 +471,12 @@ async function callAPI(userText, isFirst) {
   document.getElementById('btn-send').disabled = true;
   if (!isFirst) addMsg('user', userText);
   
-  // Formatage pour l'IA de Google (Gemini)
+  // On prépare l'historique pour Gemini
   history.push({ role: 'user', parts: [{ text: userText }] });
   const typing = addTyping();
 
-  // METS TA CLÉ ICI (Garde bien les deux petits ' ')
-  const API_KEY = ""; 
-  const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
- try {
-    // On appelle notre "pont" sur Vercel au lieu de Google en direct
+  try {
+    // ON APPELLE TON PONT VERCEL (api/chat)
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -493,15 +489,21 @@ async function callAPI(userText, isFirst) {
     const data = await res.json();
     removeTyping(typing);
 
-    const reply = data.candidates[0].content.parts[0].text;
-    history.push({ role: 'model', parts: [{ text: reply }] });
-    addMsg('coach', reply);
+    // Sécurité : on vérifie si la réponse contient bien du texte
+    if (data.candidates && data.candidates[0].content) {
+      const reply = data.candidates[0].content.parts[0].text;
+      history.push({ role: 'model', parts: [{ text: reply }] });
+      addMsg('coach', reply);
+    } else {
+      throw new Error("Réponse vide de l'IA");
+    }
 
   } catch (e) {
-    console.error(e);
+    console.error("Erreur détaillée :", e);
     removeTyping(typing);
-    addMsg('coach', "Connexion établie, mais l'IA ne répond pas encore. Vérifie ta variable GEMINI_API_KEY sur Vercel !");
+    addMsg('coach', "⚠️ Le pont vers l'IA est cassé. Vérifie que le dossier 'api' avec 'chat.js' est bien envoyé sur Vercel !");
   }
+
   isLoading = false;
   document.getElementById('btn-send').disabled = false;
   document.getElementById('chat-input').focus();
