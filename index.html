@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BacMentor — Ton coach IA pour le Bac</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sun: #FFB800;
+  --sun-light: #FFD84D;
+  --sun-pale: #FFF3C4;
+  --ember: #FF6B1A;
+  --ember-light: #FF8C4A;
+  --white: #FFFFFF;
+  --cream: #FFFDF5;
+  --ink: #1A1200;
+  --ink-mid: #3D2E00;
+  --ink-soft: #7A6830;
+  --border: rgba(255,184,0,0.18);
+  --shadow-sun: 0 8px 40px rgba(255,184,0,0.25);
+  --shadow-ember: 0 8px 40px rgba(255,107,26,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cabinet Grotesk',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;cursor:none;}
+.cursor{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;width:12px;height:12px;border-radius:50%;background:var(--sun);mix-blend-mode:multiply;transform:translate(-50%,-50%);transition:width 0.3s,height 0.3s;}
+.cursor-trail{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--sun);opacity:0.4;transform:translate(-50%,-50%);transition:transform 0.25s cubic-bezier(.17,.67,.35,1);}
+#solar-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.55;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:0.6;}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,253,245,0.85);backdrop-filter:blur(20px) saturate(1.8);border-bottom:1px solid var(--border);animation:slideDown 0.7s cubic-bezier(.22,1,.36,1) both;}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.logo{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;letter-spacing:-0.03em;line-height:1;color:var(--ink);}
+.logo .accent{color:var(--sun);font-style:italic;}
+.logo-tag{display:inline-block;margin-left:0.5rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;font-family:'Cabinet Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:30px;vertical-align:middle;box-shadow:0 2px 10px rgba(255,107,26,0.35);}
+nav{display:flex;align-items:center;gap:2.5rem;}
+nav a{font-size:0.88rem;font-weight:500;color:var(--ink-soft);text-decoration:none;transition:color 0.2s;position:relative;}
+nav a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1.5px;background:var(--sun);transform:scaleX(0);transition:transform 0.2s;transform-origin:left;}
+nav a:hover{color:var(--ink);}
+nav a:hover::after{transform:scaleX(1);}
+.btn-nav{padding:0.55rem 1.4rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:30px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:var(--shadow-ember);transition:transform 0.2s,box-shadow 0.2s;}
+.btn-nav:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 12px 32px rgba(255,107,26,0.35);}
+
+/* HERO */
+.hero{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;padding:10rem 3rem 5rem;max-width:1280px;margin:0 auto;}
+.hero-left{animation:fadeUp 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;}
+.hero-right{animation:fadeUp 0.9s 0.45s cubic-bezier(.22,1,.36,1) both;}
+@keyframes fadeUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.eyebrow{display:inline-flex;align-items:center;gap:0.6rem;background:var(--sun-pale);border:1px solid rgba(255,184,0,0.3);border-radius:30px;padding:0.35rem 1rem;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ember);margin-bottom:2rem;}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--ember);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,5.5vw,5rem);font-weight:900;line-height:1.0;letter-spacing:-0.04em;margin-bottom:1.6rem;}
+h1 .line2{font-style:italic;color:var(--sun);display:block;}
+h1 .line3{display:block;}
+.hero-desc{font-size:1.05rem;line-height:1.75;color:var(--ink-soft);max-width:460px;margin-bottom:2.5rem;font-weight:400;}
+.hero-cta{display:flex;align-items:center;gap:1rem;margin-bottom:3rem;flex-wrap:wrap;}
+.btn-hero{padding:0.9rem 2.2rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:50px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 6px 30px rgba(255,107,26,0.4);transition:transform 0.25s,box-shadow 0.25s;animation:glowPulse 3s ease-in-out infinite;}
+@keyframes glowPulse{0%,100%{box-shadow:0 6px 30px rgba(255,107,26,0.4),0 0 0 0 rgba(255,184,0,0.4)}50%{box-shadow:0 6px 40px rgba(255,107,26,0.55),0 0 0 8px rgba(255,184,0,0)}}
+.btn-hero:hover{transform:translateY(-3px) scale(1.03);animation:none;box-shadow:0 14px 40px rgba(255,107,26,0.5);}
+.btn-ghost{padding:0.9rem 1.8rem;background:transparent;border:1.5px solid var(--border);border-radius:50px;color:var(--ink-soft);font-family:'Cabinet Grotesk',sans-serif;font-weight:500;font-size:0.95rem;cursor:pointer;transition:border-color 0.2s,color 0.2s;}
+.btn-ghost:hover{border-color:var(--sun);color:var(--ink);}
+.social-proof{display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:var(--ink-soft);}
+.avatars{display:flex;}
+.av{width:30px;height:30px;border-radius:50%;border:2px solid white;margin-right:-8px;background:linear-gradient(135deg,var(--sun),var(--ember));display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:white;font-weight:700;}
+.stars{color:var(--sun);font-size:0.85rem;letter-spacing:-1px;}
+.stats-row{display:flex;gap:1rem;flex-wrap:wrap;}
+.stat-pill{background:white;border:1px solid var(--border);border-radius:16px;padding:1rem 1.4rem;box-shadow:0 2px 20px rgba(255,184,0,0.08);transition:transform 0.2s,box-shadow 0.2s;}
+.stat-pill:hover{transform:translateY(-3px);box-shadow:var(--shadow-sun);}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--ink);line-height:1;letter-spacing:-0.04em;}
+.stat-num sup{font-size:1rem;color:var(--ember);}
+.stat-label{font-size:0.72rem;color:var(--ink-soft);margin-top:0.2rem;font-weight:500;}
+
+/* CHAT CARD */
+.chat-card{background:white;border:1.5px solid var(--border);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(255,184,0,0.15),0 8px 32px rgba(0,0,0,0.06);position:relative;transition:box-shadow 0.3s;}
+.chat-card:hover{box-shadow:0 40px 100px rgba(255,184,0,0.2),0 8px 32px rgba(0,0,0,0.08);}
+.chat-card::before{content:'';position:absolute;inset:-2px;border-radius:30px;background:linear-gradient(135deg,var(--sun),var(--ember),var(--sun-light));z-index:-1;opacity:0.6;animation:ringRot 4s linear infinite;}
+@keyframes ringRot{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(30deg)}}
+.chat-topbar{padding:1.1rem 1.4rem;background:linear-gradient(135deg,var(--ink),var(--ink-mid));display:flex;align-items:center;gap:0.85rem;}
+.bot-av{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--sun),var(--ember));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;box-shadow:0 4px 14px rgba(255,107,26,0.5);}
+.bot-name{font-family:'Playfair Display',serif;font-weight:700;font-size:0.95rem;color:white;}
+.bot-sub{font-size:0.7rem;color:rgba(255,255,255,0.5);}
+.status-live{margin-left:auto;display:flex;align-items:center;gap:0.4rem;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.6);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4AE580;box-shadow:0 0 0 3px rgba(74,229,128,0.2);animation:livePulse 2s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 3px rgba(74,229,128,0.2)}50%{box-shadow:0 0 0 7px rgba(74,229,128,0)}}
+
+/* SETUP */
+#setup-panel{padding:1.5rem;}
+.form-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;color:var(--ink);}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:0.4rem;}
+.field select,.field input,.field textarea{width:100%;padding:0.7rem 1rem;background:var(--cream);border:1.5px solid rgba(255,184,0,0.2);border-radius:12px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;color:var(--ink);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.field select:focus,.field input:focus,.field textarea:focus{border-color:var(--sun);box-shadow:0 0 0 4px rgba(255,184,0,0.12);}
+.field textarea{resize:vertical;min-height:65px;}
+.chips{display:flex;flex-wrap:wrap;gap:0.45rem;}
+.chip{padding:0.32rem 0.75rem;border-radius:20px;border:1.5px solid rgba(255,184,0,0.25);background:white;font-size:0.76rem;font-weight:500;cursor:pointer;transition:all 0.18s;user-select:none;color:var(--ink-soft);}
+.chip:hover{border-color:var(--sun);color:var(--ink);}
+.chip.active{background:linear-gradient(135deg,var(--sun),var(--ember));border-color:transparent;color:white;box-shadow:0 3px 12px rgba(255,107,26,0.3);}
+.btn-launch{width:100%;margin-top:0.8rem;padding:0.95rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:16px;font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;font-style:italic;cursor:pointer;box-shadow:0 6px 24px rgba(255,107,26,0.35);transition:transform 0.2s,box-shadow 0.2s;}
+.btn-launch:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,107,26,0.45);}
+.btn-launch:disabled{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* CHAT PANEL */
+#chat-panel{display:none;flex-direction:column;height:500px;}
+.session-bar{padding:0.55rem 1.2rem;background:var(--sun-pale);border-bottom:1px solid rgba(255,184,0,0.2);font-size:0.72rem;color:var(--ember);font-weight:600;display:flex;align-items:center;gap:0.4rem;}
+.messages{flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:0.9rem;scroll-behavior:smooth;}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:rgba(255,184,0,0.3);border-radius:4px;}
+.msg{display:flex;gap:0.6rem;max-width:90%;}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-av{width:30px;height:30px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.85rem;margin-top:2px;}
+.msg.coach .msg-av{background:linear-gradient(135deg,var(--sun),var(--ember));box-shadow:0 3px 10px rgba(255,107,26,0.25);}
+.msg.user .msg-av{background:var(--ink);}
+.msg-bubble{padding:0.75rem 1rem;border-radius:16px;line-height:1.65;font-size:0.85rem;}
+.msg.coach .msg-bubble{background:var(--cream);border:1px solid var(--border);border-top-left-radius:4px;color:var(--ink);}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--ink),var(--ink-mid));color:white;border-top-right-radius:4px;}
+.typing{display:flex;gap:4px;padding:0.8rem 1rem;background:var(--cream);border:1px solid var(--border);border-radius:16px;border-top-left-radius:4px;width:fit-content;}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--sun);animation:typeBounce 1.3s infinite;}
+.typing span:nth-child(2){animation-delay:0.22s;background:var(--ember);}
+.typing span:nth-child(3){animation-delay:0.44s;}
+@keyframes typeBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+.input-area{padding:1rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:0.6rem;align-items:flex-end;background:white;}
+.chat-input{flex:1;padding:0.7rem 1rem;border:1.5px solid rgba(255,184,0,0.25);border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.86rem;outline:none;resize:none;max-height:100px;background:var(--cream);transition:border-color 0.2s,box-shadow 0.2s;color:var(--ink);}
+.chat-input:focus{border-color:var(--sun);box-shadow:0 0 0 4px rgba(255,184,0,0.1);}
+.btn-send{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--sun),var(--ember));border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,107,26,0.35);transition:transform 0.15s,box-shadow 0.15s;flex-shrink:0;}
+.btn-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(255,107,26,0.45);}
+.btn-send:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+
+/* MARQUEE */
+.marquee-wrap{position:relative;z-index:2;overflow:hidden;padding:1.1rem 0;background:linear-gradient(135deg,var(--sun),var(--ember));border-top:1px solid rgba(255,255,255,0.2);border-bottom:1px solid rgba(255,255,255,0.2);}
+.marquee-track{display:flex;gap:3rem;width:max-content;animation:marquee 22s linear infinite;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee-item{display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;font-weight:700;color:white;white-space:nowrap;letter-spacing:0.02em;}
+.marquee-sep{color:rgba(255,255,255,0.4);font-size:1.2rem;}
+
+/* FEATURES */
+.features-section{position:relative;z-index:2;padding:7rem 3rem;max-width:1280px;margin:0 auto;}
+.section-header{max-width:600px;margin-bottom:4rem;}
+.section-kicker{display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ember);margin-bottom:1rem;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:900;line-height:1.1;letter-spacing:-0.03em;color:var(--ink);}
+.section-title em{font-style:italic;color:var(--sun);}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.feat-card{background:white;border:1.5px solid var(--border);border-radius:24px;padding:2rem;position:relative;overflow:hidden;transition:transform 0.25s,box-shadow 0.25s;}
+.feat-card::before{content:'';position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--sun-pale),transparent);opacity:0;transition:opacity 0.3s;}
+.feat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-sun);}
+.feat-card:hover::before{opacity:1;}
+.feat-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.4rem;}
+.fi-a{background:linear-gradient(135deg,#FFF3C4,#FFE57A);}
+.fi-b{background:linear-gradient(135deg,#FFE0D0,#FFB899);}
+.fi-c{background:linear-gradient(135deg,#D0F0E0,#7ADCB0);}
+.fi-d{background:linear-gradient(135deg,#D0E4FF,#7AB4FF);}
+.fi-e{background:linear-gradient(135deg,#F0D0FF,#C87AFF);}
+.fi-f{background:linear-gradient(135deg,#FFD0D0,#FF7A7A);}
+.feat-card h3{font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;margin-bottom:0.6rem;color:var(--ink);}
+.feat-card p{font-size:0.84rem;color:var(--ink-soft);line-height:1.65;}
+
+/* HOW */
+.how-section{position:relative;z-index:2;padding:7rem 3rem;background:var(--ink);color:white;overflow:hidden;}
+.how-inner{max-width:1280px;margin:0 auto;}
+.how-section .section-title{color:white;}
+.how-section .section-title em{color:var(--sun);}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:4rem;}
+.step{position:relative;}
+.step-num{font-family:'Playfair Display',serif;font-size:4.5rem;font-weight:900;line-height:1;letter-spacing:-0.05em;color:rgba(255,184,0,0.15);margin-bottom:0.5rem;}
+.step-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--sun),var(--ember));display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;box-shadow:0 6px 20px rgba(255,107,26,0.35);}
+.step h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:0.5rem;color:white;}
+.step p{font-size:0.83rem;color:rgba(255,255,255,0.5);line-height:1.65;}
+.step-arrow{position:absolute;top:2.8rem;right:-1.2rem;color:rgba(255,184,0,0.3);font-size:1.5rem;}
+
+/* PRICING */
+.pricing-section{position:relative;z-index:2;padding:7rem 3rem;max-width:1280px;margin:0 auto;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:4rem;align-items:start;}
+.price-card{background:white;border:1.5px solid var(--border);border-radius:24px;padding:2.2rem;transition:transform 0.25s,box-shadow 0.25s;}
+.price-card:hover{transform:translateY(-4px);}
+.price-card.highlight{background:linear-gradient(160deg,var(--ink) 0%,#2D1F00 100%);border-color:var(--sun);box-shadow:0 20px 60px rgba(255,184,0,0.2),0 0 0 1px rgba(255,184,0,0.3);transform:scale(1.03);}
+.price-card.highlight:hover{transform:scale(1.03) translateY(-4px);}
+.price-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.plan-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);}
+.price-card.highlight .plan-label{color:rgba(255,255,255,0.5);}
+.pop-badge{background:linear-gradient(135deg,var(--sun),var(--ember));color:white;font-size:0.62rem;font-weight:800;padding:0.2rem 0.7rem;border-radius:20px;letter-spacing:0.05em;text-transform:uppercase;}
+.price-amount{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;letter-spacing:-0.05em;line-height:1;margin-bottom:0.3rem;color:var(--ink);}
+.price-card.highlight .price-amount{color:white;}
+.price-amount small{font-size:1rem;font-weight:400;color:var(--ink-soft);}
+.price-card.highlight .price-amount small{color:rgba(255,255,255,0.45);}
+.price-sub{font-size:0.82rem;color:var(--ink-soft);margin-bottom:1.8rem;}
+.price-card.highlight .price-sub{color:rgba(255,255,255,0.4);}
+.price-feats{list-style:none;margin-bottom:2rem;}
+.price-feats li{padding:0.55rem 0;border-bottom:1px solid var(--border);font-size:0.84rem;color:var(--ink-soft);display:flex;align-items:center;gap:0.6rem;}
+.price-card.highlight .price-feats li{border-color:rgba(255,184,0,0.15);color:rgba(255,255,255,0.6);}
+.price-feats li::before{content:'✦';color:var(--sun);font-size:0.7rem;}
+.btn-price{width:100%;padding:0.85rem;border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;border:1.5px solid var(--border);background:transparent;color:var(--ink);}
+.btn-price:hover{background:var(--ink);color:white;border-color:var(--ink);}
+.price-card.highlight .btn-price{background:linear-gradient(135deg,var(--sun),var(--ember));border-color:transparent;color:white;box-shadow:0 6px 20px rgba(255,107,26,0.4);}
+.price-card.highlight .btn-price:hover{box-shadow:0 10px 30px rgba(255,107,26,0.55);transform:translateY(-2px);}
+
+/* TESTIMONIALS */
+.testi-section{position:relative;z-index:2;padding:5rem 3rem;background:linear-gradient(180deg,var(--sun-pale) 0%,var(--cream) 100%);border-top:1px solid rgba(255,184,0,0.2);}
+.testi-inner{max-width:1280px;margin:0 auto;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem;}
+.testi-card{background:white;border:1px solid var(--border);border-radius:20px;padding:1.8rem;transition:transform 0.2s,box-shadow 0.2s;}
+.testi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sun);}
+.stars-row{color:var(--sun);font-size:0.9rem;letter-spacing:1px;margin-bottom:1rem;}
+.testi-text{font-size:0.88rem;line-height:1.7;color:var(--ink-soft);margin-bottom:1.2rem;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:0.7rem;}
+.testi-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--ember));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;}
+.testi-name{font-size:0.84rem;font-weight:700;color:var(--ink);}
+.testi-role{font-size:0.72rem;color:var(--ink-soft);}
+
+/* FOOTER */
+footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--cream);}
+.foot-copy{font-size:0.8rem;color:var(--ink-soft);}
+.foot-links{display:flex;gap:1.5rem;}
+.foot-links a{font-size:0.8rem;color:var(--ink-soft);text-decoration:none;}
+.foot-links a:hover{color:var(--ember);}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.features-grid,.pricing-grid,.testi-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.step-arrow{display:none}}
+@media(max-width:768px){.hero{grid-template-columns:1fr;padding:8rem 1.5rem 3rem;gap:3rem}header{padding:1rem 1.5rem}nav a{display:none}.features-grid,.pricing-grid,.testi-grid,.steps{grid-template-columns:1fr}.price-card.highlight{transform:none}.features-section,.pricing-section{padding:4rem 1.5rem}.how-section{padding:4rem 1.5rem}.testi-section{padding:4rem 1.5rem}footer{flex-direction:column;gap:1rem;text-align:center}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursor-trail"></div>
+<canvas id="solar-canvas"></canvas>
+
+<header>
+  <div class="logo">Bac<span class="accent">Mentor</span><span class="logo-tag">IA</span></div>
+  <nav>
+    <a href="#features">Fonctionnalités</a>
+    <a href="#how">Comment ça marche</a>
+    <a href="#pricing">Tarifs</a>
+    <button class="btn-nav" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">Essai gratuit →</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="eyebrow"><div class="eyebrow-dot"></div>Coaching IA · Révision Bac 2025</div>
+    <h1>Réussis ton Bac<span class="line2">sans te noyer</span><span class="line3">dans tes fiches.</span></h1>
+    <p class="hero-desc">BacMentor analyse ton niveau en temps réel, identifie tes lacunes et t'entraîne sur mesure — comme un vrai coach, disponible à 23h avant ton exam.</p>
+    <div class="hero-cta">
+      <button class="btn-hero" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">🚀 Commencer gratuitement</button>
+      <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Comment ça marche</button>
+    </div>
+    <div class="social-proof">
+      <div class="avatars"><div class="av">L</div><div class="av">M</div><div class="av">A</div><div class="av">R</div></div>
+      <div><div class="stars">★★★★★</div><div>+1 200 lycéens font confiance à BacMentor</div></div>
+    </div>
+  </div>
+
+  <div id="chat-anchor">
+    <div class="chat-card">
+      <div class="chat-topbar">
+        <div class="bot-av">🎓</div>
+        <div><div class="bot-name">BacMentor</div><div class="bot-sub">Coach IA · Personnalisé pour toi</div></div>
+        <div class="status-live"><div class="live-dot"></div>En ligne</div>
+      </div>
+      <div id="setup-panel">
+        <p class="form-title">Crée ton profil de révision</p>
+        <div class="field">
+          <label>Ta filière</label>
+          <select id="filiere"><option value="">Choisir ta filière…</option><option>Générale (Spécialités)</option><option>Technologique STI2D</option><option>Technologique STMG</option><option>Technologique ST2S</option><option>Professionnelle</option></select>
+        </div>
+        <div class="field">
+          <label>Matières à travailler</label>
+          <div class="chips"><div class="chip" data-val="Mathématiques">Maths</div><div class="chip" data-val="Physique-Chimie">Physique</div><div class="chip" data-val="NSI">NSI</div><div class="chip" data-val="SIN / STI2D">SIN</div><div class="chip" data-val="Français">Français</div><div class="chip" data-val="Histoire-Géo">Hist-Géo</div><div class="chip" data-val="SVT">SVT</div><div class="chip" data-val="Anglais">Anglais</div><div class="chip" data-val="Philosophie">Philo</div><div class="chip" data-val="ITEC / STI2D">ITEC</div><div class="chip" data-val="AC / STI2D">AC</div><div class="chip" data-val="HLP / GENERALE">HLP</div><div class="chip" data-val="HGGSP / GENERALE">HGGSP</div><div class="chip" data-val="LLCE / GENERALE">LLCE</div><div class="chip" data-val="SES / GENERALE">SES</div><div class="chip" data-val="ECO-GESTION / STMG">Eco-Gestion</div><div class="chip" data-val="MANAGEMENT / STMG">Management</div></div>
+        </div>
+        <div class="field">
+          <label>Ton niveau actuel</label>
+          <select id="niveau"><option value="">Évalue-toi honnêtement…</option><option>En difficulté (moy. &lt; 10)</option><option>Moyen (10–13)</option><option>Bon (13–16)</option><option>Très bon (16+)</option></select>
+        </div>
+        <div class="field">
+          <label>Tes points faibles (optionnel)</label>
+          <textarea id="faibles" placeholder="Ex : dérivées, dissertation, réseaux IP…"></textarea>
+        </div>
+        <button class="btn-launch" id="btn-launch" onclick="startCoaching()">✦ Lancer ma session personnalisée</button>
+      </div>
+      <div id="chat-panel">
+        <div class="session-bar">✦ <span id="session-label">Session active</span></div>
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+          <textarea class="chat-input" id="chat-input" rows="1" placeholder="Réponds à l'exercice ou pose ta question…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="btn-send" id="btn-send" onclick="sendMessage()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row" style="margin-top:1.2rem;">
+      <div class="stat-pill"><div class="stat-num">3<sup>×</sup></div><div class="stat-label">Plus efficace</div></div>
+      <div class="stat-pill"><div class="stat-num">24/7</div><div class="stat-label">Disponible</div></div>
+      <div class="stat-pill"><div class="stat-num">+2<sup>pts</sup></div><div class="stat-label">De moyenne</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">🎯 Diagnostic instantané <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">📚 Exercices sur mesure <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">✅ Corrections expliquées <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🧠 Méthode active <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">⚡ Disponible 24h/24 <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">📈 Suivi de progression <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🎓 Toutes filières Bac <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🌟 +1 200 élèves <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🎯 Diagnostic instantané <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">📚 Exercices sur mesure <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">✅ Corrections expliquées <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🧠 Méthode active <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">⚡ Disponible 24h/24 <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">📈 Suivi de progression <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🎓 Toutes filières Bac <span class="marquee-sep">·</span></span>
+    <span class="marquee-item">🌟 +1 200 élèves <span class="marquee-sep">·</span></span>
+  </div>
+</div>
+
+<section class="features-section" id="features">
+  <div class="section-header">
+    <div class="section-kicker">Pourquoi BacMentor</div>
+    <h2 class="section-title">Tout ce qu'il te faut pour <em>briller</em> au Bac</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card"><div class="feat-icon fi-a">🎯</div><h3>Diagnostic en 5 min</h3><p>Le coach cerne tes lacunes en quelques questions et construit un plan ciblé sur ce qui compte vraiment.</p></div>
+    <div class="feat-card"><div class="feat-icon fi-b">📚</div><h3>Exercices générés</h3><p>Des exercices créés selon ta filière, ton niveau et tes faiblesses. Jamais les mêmes, toujours progressifs.</p></div>
+    <div class="feat-card"><div class="feat-icon fi-c">✅</div><h3>Corrections expliquées</h3><p>Chaque erreur analysée pas à pas. Tu comprends le pourquoi, pas juste ce qui est juste.</p></div>
+    <div class="feat-card"><div class="feat-icon fi-d">🧠</div><h3>Méthode socratique</h3><p>Questions, rappels espacés, reformulations — le coach t'oblige à penser. Ta mémoire long terme s'active.</p></div>
+    <div class="feat-card"><div class="feat-icon fi-e">⚡</div><h3>Disponible 24h/24</h3><p>Bloqué à 23h avant l'exam ? Le coach répond en secondes, sans jugement, autant de fois que nécessaire.</p></div>
+    <div class="feat-card"><div class="feat-icon fi-f">📈</div><h3>Suivi de progression</h3><p>Visualise ta courbe de maîtrise semaine après semaine. Identifie où tu as le plus progressé.</p></div>
+  </div>
+</section>
+
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="section-kicker" style="color:rgba(255,184,0,0.7)">Comment ça marche</div>
+    <h2 class="section-title">4 étapes pour <em>décrocher</em> ton Bac</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div class="step-icon">📋</div><h3>Crée ton profil</h3><p>Filière, matières, niveau, points faibles. 30 secondes et le coach sait tout.</p><div class="step-arrow">→</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-icon">🔍</div><h3>Diagnostic IA</h3><p>Le coach te pose des questions ciblées pour cartographier tes lacunes avec précision.</p><div class="step-arrow">→</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-icon">🎯</div><h3>Entraînement sur mesure</h3><p>Des exercices et corrections adaptés en temps réel à tes réponses. Tu progresses vite.</p><div class="step-arrow">→</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-icon">🏆</div><h3>Jour J — Tu es prêt</h3><p>Tu arrives à l'exam avec confiance, sans zones d'ombre, les méthodes bien ancrées.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section" id="pricing">
+  <div class="section-header">
+    <div class="section-kicker">Tarifs</div>
+    <h2 class="section-title">Investis dans ton <em>avenir</em></h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-top"><div class="plan-label">Découverte</div></div>
+      <div class="price-amount">0€ <small>/ toujours</small></div>
+      <div class="price-sub">Pour tester sans risque</div>
+      <ul class="price-feats"><li>3 sessions par semaine</li><li>1 matière au choix</li><li>Exercices de base</li><li>Corrections instantanées</li></ul>
+      <button class="btn-price" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">Commencer gratuit</button>
+    </div>
+    <div class="price-card highlight">
+      <div class="price-top"><div class="plan-label">Intensif</div><div class="pop-badge">⭐ Populaire</div></div>
+      <div class="price-amount">8.90€ <small>/ mois</small></div>
+      <div class="price-sub">Pour les élèves déterminés</div>
+      <ul class="price-feats"><li>Sessions illimitées</li><li>Toutes les matières</li><li>Fiches de révision générées</li><li>Simulations d'épreuves</li><li>Suivi de progression</li><li>Sans engagement</li></ul>
+      <button class="btn-price" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">Choisir Intensif →</button>
+    </div>
+    <div class="price-card">
+      <div class="price-top"><div class="plan-label">Famille</div></div>
+      <div class="price-amount">19.90€ <small>/ mois</small></div>
+      <div class="price-sub">Jusqu'à 3 élèves</div>
+      <ul class="price-feats"><li>3 profils indépendants</li><li>Toutes les matières</li><li>Dashboard parent</li><li>Rapports hebdomadaires</li><li>Support prioritaire</li></ul>
+      <button class="btn-price">Choisir Famille</button>
+    </div>
+  </div>
+</section>
+
+<section class="testi-section">
+  <div class="testi-inner">
+    <div class="section-kicker">Témoignages</div>
+    <h2 class="section-title">Ils ont <em>décroché</em> leur Bac</h2>
+    <div class="testi-grid">
+      <div class="testi-card"><div class="stars-row">★★★★★</div><p class="testi-text">"J'avais 8 en maths en janvier. Avec BacMentor je suis passé à 14 au Bac. Le coach s'adapte à mes erreurs en direct, c'est incroyable."</p><div class="testi-author"><div class="testi-av">L</div><div><div class="testi-name">Lucas M.</div><div class="testi-role">Terminale Générale · Mention Bien</div></div></div></div>
+      <div class="testi-card"><div class="stars-row">★★★★★</div><p class="testi-text">"En STI2D je galérais sur les diagrammes SysML. BacMentor m'a fait pratiquer avec des exercices ciblés. Mention TB !"</p><div class="testi-author"><div class="testi-av">A</div><div><div class="testi-name">Amira K.</div><div class="testi-role">Terminale STI2D · Mention Très Bien</div></div></div></div>
+      <div class="testi-card"><div class="stars-row">★★★★★</div><p class="testi-text">"La dispo 24/7 c'est game changer. La veille du Bac à 1h du mat, j'ai pu pratiquer mes plans de dissert. Impossible avec un vrai prof."</p><div class="testi-author"><div class="testi-av">R</div><div><div class="testi-name">Raphaël D.</div><div class="testi-role">Terminale Générale · Mention Assez Bien</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo" style="font-size:1.2rem;">Bac<span class="accent">Mentor</span></div>
+  <div class="foot-copy">© 2025 BacMentor · Propulsé par IA · Fait en France 🇫🇷</div>
+  <div class="foot-links"><a href="#">CGU</a><a href="#">Mentions légales</a><a href="#">Contact</a></div>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),trail=document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx-6}px,${my-6}px)`;});
+function animTrail(){tx+=(mx-tx)*0.12;ty+=(my-ty)*0.12;trail.style.transform=`translate(${tx-16}px,${ty-16}px)`;requestAnimationFrame(animTrail);}
+animTrail();
+document.querySelectorAll('button,a,.chip,.feat-card,.price-card,.testi-card,.stat-pill').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';});
+});
+
+// SOLAR CANVAS
+const canvas=document.getElementById('solar-canvas'),ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+class Particle{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*3+1;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4-0.15;this.life=1;this.decay=Math.random()*0.003+0.001;this.hue=Math.random()*30+35;}
+  update(){this.x+=this.vx;this.y+=this.vy;this.life-=this.decay;if(this.life<=0||this.y<-20)this.reset();}
+  draw(){ctx.save();ctx.globalAlpha=this.life*0.35;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`hsl(${this.hue},100%,60%)`;ctx.fill();ctx.restore();}
+}
+for(let i=0;i<80;i++)particles.push(new Particle());
+const blobs=[{x:0.15,y:0.2,r:320,c:'rgba(255,184,0,0.06)'},{x:0.85,y:0.5,r:280,c:'rgba(255,107,26,0.05)'},{x:0.5,y:0.85,r:350,c:'rgba(255,216,77,0.05)'}];
+function drawFrame(){
+  ctx.clearRect(0,0,W,H);
+  blobs.forEach(b=>{const g=ctx.createRadialGradient(b.x*W,b.y*H,0,b.x*W,b.y*H,b.r);g.addColorStop(0,b.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);});
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
+
+// CHIPS
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('active')));
+
+// COACHING
+let profile={},history=[],isLoading=false;
+
+async function startCoaching(){
+  const filiere=document.getElementById('filiere').value;
+  const niveau=document.getElementById('niveau').value;
+  const faibles=document.getElementById('faibles').value.trim();
+  const matieres=[...document.querySelectorAll('.chip.active')].map(c=>c.dataset.val);
+  if(!filiere||!niveau||!matieres.length){alert('Remplis ta filière, ton niveau et au moins une matière 👆');return;}
+  profile={filiere,niveau,matieres,faibles};
+  document.getElementById('setup-panel').style.display='none';
+  const cp=document.getElementById('chat-panel');cp.style.display='flex';
+  document.getElementById('session-label').textContent=`${filiere} · ${matieres.join(', ')}`;
+  const intro=`Bonjour ! Profil : ${filiere}, niveau "${niveau}", matières : ${matieres.join(', ')}.${faibles?` Points faibles : ${faibles}.`:''} Lance ma session !`;
+  await callAPI(intro,true);
+}
+
+function buildSystem(p){
+  return `Tu es BacMentor, un coach de révision expert, chaleureux et motivant pour le Bac français.
+
+PROFIL ÉLÈVE : Filière ${p.filiere} · Niveau ${p.niveau} · Matières : ${p.matieres.join(', ')} · Points faibles : ${p.faibles||'non précisés'}
+
+MISSION :
+1. Diagnostiquer les lacunes avec des questions ciblées
+2. Proposer des exercices progressifs et adaptés
+3. Corriger en expliquant le POURQUOI de chaque erreur
+4. Encourager et motiver constamment
+5. Adapter la difficulté en temps réel
+
+STYLE : Direct, clair, chaleureux. Une chose à la fois. Quelques emojis pour dynamiser. Toujours en français. Commence par un accueil motivant puis une première question de diagnostic.`;
+}
+
+async function sendMessage(){
+  const inp=document.getElementById('chat-input');
+  const txt=inp.value.trim();
+  if(!txt||isLoading)return;
+  inp.value='';inp.style.height='auto';
+  await callAPI(txt,false);
+}
+
+async function callAPI(userText, isFirst) {
+  isLoading = true;
+  document.getElementById('btn-send').disabled = true;
+  if (!isFirst) addMsg('user', userText);
+
+  history.push({ role: 'user', parts: [{ text: userText }] });
+  const typing = addTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: history,
+        systemInstruction: { parts: [{ text: buildSystem(profile) }] }
+      })
+    });
+
+    const data = await res.json();
+    removeTyping(typing);
+
+    if (data.candidates && data.candidates[0].content) {
+      const reply = data.candidates[0].content.parts[0].text;
+      history.push({ role: 'model', parts: [{ text: reply }] });
+      addMsg('coach', reply);
+    } else {
+      const errMsg = data.error ? data.error.message : "Réponse inattendue de l'IA";
+      throw new Error(errMsg);
+    }
+
+  } catch (e) {
+    console.error("Erreur :", e);
+    removeTyping(typing);
+    addMsg('coach', `⚠️ Erreur : ${e.message}`);
+  }
+
+  isLoading = false;
+  document.getElementById('btn-send').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+function addMsg(role,text){
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');d.className=`msg ${role}`;
+  d.innerHTML=`<div class="msg-av">${role==='coach'?'🎓':'👤'}</div><div class="msg-bubble">${fmt(text)}</div>`;
+  msgs.appendChild(d);
+  d.style.opacity='0';d.style.transform='translateY(10px)';
+  requestAnimationFrame(()=>{d.style.transition='opacity 0.35s,transform 0.35s';d.style.opacity='1';d.style.transform='translateY(0)';});
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function fmt(t){
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="background:var(--sun-pale);padding:0.1em 0.35em;border-radius:4px;font-size:0.9em">$1</code>').replace(/\n/g,'<br>');
+}
+
+function addTyping(){
+  const msgs=document.getElementById('messages');
+  const w=document.createElement('div');w.className='msg coach';w.id='typing-wrap';
+  w.innerHTML='<div class="msg-av">🎓</div><div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;return w;
+}
+function removeTyping(el){if(el)el.remove();}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.1});
+document.querySelectorAll('.feat-card,.price-card,.testi-card,.step').forEach((el,i)=>{
+  el.style.opacity='0';el.style.transform='translateY(30px)';
+  el.style.transition=`opacity 0.6s ${i*0.08}s,transform 0.6s ${i*0.08}s`;
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
