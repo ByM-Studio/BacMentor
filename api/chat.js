@@ -1,73 +1,75 @@
 export default async function handler(req, res) {
-  const API_KEY = process.env.GEMINI_API_KEY;
- 
-  // 1. Vérif clé API
+  const API_KEY = process.env.GROQ_API_KEY;
+
   if (!API_KEY) {
-    console.error('[BacMentor] GEMINI_API_KEY manquante !');
+    console.error('[BacMentor] GROQ_API_KEY manquante !');
     return res.status(500).json({ error: 'Clé API manquante côté serveur.' });
   }
- 
-  // 2. Vérif méthode
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
   }
- 
-  const MODEL = 'gemini-2.0-flash';
-  const URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
- 
+
   try {
     const { contents, systemInstruction } = req.body;
- 
+
     if (!contents || !Array.isArray(contents)) {
-      return res.status(400).json({ error: 'Corps de requête invalide : "contents" manquant.' });
+      return res.status(400).json({ error: 'Corps de requête invalide.' });
     }
- 
-    const geminiBody = { contents };
-    if (systemInstruction) geminiBody.systemInstruction = systemInstruction;
- 
-    // 3. Appel Gemini
-    console.log('[BacMentor] Appel Gemini →', MODEL, '| messages:', contents.length);
-    const geminiRes = await fetch(URL, {
+
+    // Conversion format Gemini → format OpenAI
+    const messages = [];
+
+    // Ajout du system prompt
+    if (systemInstruction?.parts?.[0]?.text) {
+      messages.push({
+        role: 'system',
+        content: systemInstruction.parts[0].text
+      });
+    }
+
+    // Conversion des messages (Gemini: parts[].text → OpenAI: content)
+    for (const msg of contents) {
+      messages.push({
+        role: msg.role === 'model' ? 'assistant' : 'user',
+        content: msg.parts?.[0]?.text || ''
+      });
+    }
+
+    console.log('[BacMentor] Appel Groq | messages:', messages.length);
+
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiBody)
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages,
+        max_tokens: 1024,
+        temperature: 0.7
+      })
     });
- 
-    const data = await geminiRes.json();
- 
-    // 4. Log de la réponse brute (visible dans les logs Vercel)
-    console.log('[BacMentor] Réponse Gemini status:', geminiRes.status);
-    console.log('[BacMentor] Réponse Gemini data:', JSON.stringify(data).slice(0, 500));
- 
-    // 5. Erreur côté Gemini (quota dépassé, clé invalide, etc.)
-    if (!geminiRes.ok) {
-      const errMsg = data?.error?.message || `Erreur Gemini ${geminiRes.status}`;
-      console.error('[BacMentor] Erreur Gemini:', errMsg);
-      return res.status(geminiRes.status).json({ error: errMsg });
+
+    const data = await groqRes.json();
+    console.log('[BacMentor] Groq status:', groqRes.status);
+
+    if (!groqRes.ok) {
+      console.error('[BacMentor] Erreur Groq:', data?.error?.message);
+      return res.status(groqRes.status).json({ error: data?.error?.message || 'Erreur Groq' });
     }
- 
-    // 6. Réponse bloquée par les filtres de sécurité
-    if (data.promptFeedback?.blockReason) {
-      console.warn('[BacMentor] Bloqué par safety filter:', data.promptFeedback.blockReason);
-      return res.status(200).json({
-        candidates: [{
-          content: { parts: [{ text: "Je ne peux pas répondre à cette question. Reformule ta demande !" }] }
-        }]
-      });
-    }
- 
-    // 7. Pas de candidates dans la réponse
-    if (!data.candidates || data.candidates.length === 0) {
-      console.error('[BacMentor] Pas de candidates dans la réponse:', JSON.stringify(data));
-      return res.status(200).json({
-        candidates: [{
-          content: { parts: [{ text: "Réponse vide de l'IA. Réessaie !" }] }
-        }]
-      });
-    }
- 
-    return res.status(200).json(data);
- 
+
+    // Conversion réponse Groq → format Gemini (pour ne pas toucher au frontend)
+    const replyText = data.choices?.[0]?.message?.content || 'Pas de réponse.';
+    return res.status(200).json({
+      candidates: [{
+        content: {
+          parts: [{ text: replyText }]
+        }
+      }]
+    });
+
   } catch (error) {
     console.error('[BacMentor] Erreur serveur:', error.message);
     return res.status(500).json({ error: error.message });
