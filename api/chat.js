@@ -19,7 +19,8 @@ export default async function handler(req, res) {
 
     // ── 1. DÉTECTION SUJETS SENSIBLES ──────────────────────────────────────
     const lastUserMsg = [...contents].reverse().find(m => m.role === 'user');
-    const lastText = lastUserMsg?.parts?.[0]?.text?.toLowerCase() || '';
+    const lastPart = lastUserMsg?.parts?.[0];
+    const lastText = (lastPart?.text || lastPart?.content || '').toLowerCase();
 
     const alertKeywords = [
       'suicide','suicidaire','me tuer','envie de mourir','plus envie de vivre',
@@ -75,17 +76,44 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
 
     messages.push({ role: 'system', content: enrichedSystem });
 
-    // Conversion messages Gemini → OpenAI
+    // ── 4. DÉTECTION IMAGE & CHOIX DU MODÈLE ──────────────────────────────
+    // Vérifie si l'un des messages contient une image (base64 ou url)
+    let hasImage = false;
+
     for (const msg of contents) {
-      messages.push({
-        role: msg.role === 'model' ? 'assistant' : 'user',
-        content: msg.parts?.[0]?.text || ''
-      });
+      const role = msg.role === 'model' ? 'assistant' : 'user';
+
+      // Cas image : parts contient { image_url: { url: "data:..." } }
+      if (msg.parts && Array.isArray(msg.parts)) {
+        const contentParts = [];
+
+        for (const part of msg.parts) {
+          if (part.image_url) {
+            // Part image au format OpenAI vision
+            hasImage = true;
+            contentParts.push({ type: 'image_url', image_url: part.image_url });
+          } else if (part.text) {
+            contentParts.push({ type: 'text', text: part.text });
+          }
+        }
+
+        // Si plusieurs parts (texte + image), on envoie un tableau
+        if (contentParts.length > 1 || contentParts.some(p => p.type === 'image_url')) {
+          messages.push({ role, content: contentParts });
+        } else {
+          messages.push({ role, content: msg.parts?.[0]?.text || '' });
+        }
+      }
     }
 
-    console.log('[BacMentor] Appel Groq | messages:', messages.length);
+    // Choix du modèle selon présence d'image
+    const model = hasImage
+      ? 'meta-llama/llama-4-scout-17b-16e-instruct'  // Modèle vision Groq
+      : 'llama-3.3-70b-versatile';
 
-    // ── 4. APPEL GROQ ──────────────────────────────────────────────────────
+    console.log(`[BacMentor] Appel Groq | modèle: ${model} | messages: ${messages.length} | image: ${hasImage}`);
+
+    // ── 5. APPEL GROQ ──────────────────────────────────────────────────────
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -93,7 +121,7 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
         'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model,
         messages,
         max_tokens: 1024,
         temperature: 0.7
