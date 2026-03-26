@@ -1,96 +1,54 @@
 import Stripe from 'stripe';
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
 export const config = { api: { bodyParser: false } };
 
-async function buffer(readable) {
-  const chunks = [];
-  for await (const chunk of readable) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-  }
-  return Buffer.concat(chunks);
-}
-
-// ✅ FIX CRITIQUE : utilise KV_REST_API_URL + KV_REST_API_TOKEN
-// comme auth.js — l'ancienne version parsait KV_REDIS_URL (format natif Redis)
-// ce qui échouait silencieusement à chaque paiement
-async function saveToKV(email, data) {
-  const KV_REST_URL   = process.env.KV_REST_API_URL;
-  const KV_REST_TOKEN = process.env.KV_REST_API_TOKEN;
-
-  if (!KV_REST_URL || !KV_REST_TOKEN) {
-    console.error('[BacMentor] Variables KV manquantes dans stripe-webhook');
-    return;
-  }
-
-  const res = await fetch(`${KV_REST_URL}/hset/user:${email}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${KV_REST_TOKEN}`
-    },
-    body: JSON.stringify(data)
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
   });
-
-  if (!res.ok) {
-    const txt = await res.text();
-    console.error('[BacMentor] Erreur KV hset:', res.status, txt);
-  }
 }
 
 export default async function handler(req, res) {
-  const stripe        = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const sig           = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (req.method !== 'POST') return res.status(405).end();
 
+  const sig     = req.headers['stripe-signature'];
+  const rawBody = await getRawBody(req);
   let event;
+
   try {
-    const buf = await buffer(req);
-    event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
-    console.error('[BacMentor] Webhook signature invalide:', err.message);
+    console.error('[Webhook] Signature invalide:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // ✅ Activation Premium à la confirmation du paiement
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const email   = (
-      session.customer_email ||
-      session.customer_details?.email ||
-      session.metadata?.customer_email ||
-      ''
-    ).toLowerCase().trim();
+    const email   = session.customer_email || session.customer_details?.email;
 
     if (email) {
-      console.log('[BacMentor] Activation Premium pour :', email);
-      await saveToKV(email, {
-        premium:          'true',
-        premiumSince:     new Date().toISOString(),
-        stripeCustomerId: session.customer || ''
-      });
-    } else {
-      console.warn('[BacMentor] Aucun email trouvé dans la session Stripe :', session.id);
-    }
-  }
-
-  // ✅ Révocation Premium à l'annulation ou l'expiration de l'abonnement
-  if (
-    event.type === 'customer.subscription.deleted' ||
-    event.type === 'customer.subscription.paused'
-  ) {
-    const subscription = event.data.object;
-    // Retrouver l'email via le customer Stripe
-    try {
-      const customer = await stripe.customers.retrieve(subscription.customer);
-      const email    = (customer.email || '').toLowerCase().trim();
-      if (email) {
-        console.log('[BacMentor] Révocation Premium pour :', email);
-        await saveToKV(email, { premium: 'false' });
+      try {
+        // ✅ Activer le premium via auth.js
+        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://bacmentor.vercel.app'}/api/auth`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-internal-secret': process.env.INTERNAL_SECRET || 'bacmentor-internal-2026'
+          },
+          body: JSON.stringify({ action: 'activate-premium', email })
+        });
+        console.log('[Webhook] Premium activé pour:', email);
+      } catch (e) {
+        console.error('[Webhook] Erreur activation:', e.message);
       }
-    } catch (err) {
-      console.error('[BacMentor] Erreur récupération customer Stripe:', err.message);
     }
   }
 
-  return res.json({ received: true });
+  res.status(200).json({ received: true });
 }
