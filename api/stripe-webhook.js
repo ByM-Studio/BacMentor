@@ -10,23 +10,20 @@ async function buffer(readable) {
   return Buffer.concat(chunks);
 }
 
-// Fonction pour sauvegarder dans Redis via l'API REST
 async function saveToKV(email, data) {
-  // Ces noms de variables dépendent du préfixe choisi (ici KV_)
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
-  
-  await fetch(`${url}/hset/user:${email}`, {
+  const KV_URL = process.env.KV_REDIS_URL;
+  const restUrl = KV_URL.replace('redis://', 'https://').split('@')[1];
+  const [host, token] = restUrl.split(':');
+
+  await fetch(`https://${host}/hset/user:${email}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN || token}` },
     body: JSON.stringify(data)
   });
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers['stripe-signature'];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -41,16 +38,9 @@ export default async function handler(req, res) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const email = (session.customer_email || session.customer_details?.email || '').toLowerCase().trim();
-    
     if (email) {
-      // On enregistre les infos premium
-      await saveToKV(email, {
-        premium: "true",
-        stripeCustomerId: session.customer
-      });
-      console.log(`[Redis] Premium activé pour ${email}`);
+      await saveToKV(email, { premium: "true", stripeCustomerId: session.customer });
     }
   }
-
   res.json({ received: true });
 }
