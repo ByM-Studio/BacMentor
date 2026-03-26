@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BacMentor — Ton coach IA pour le Bac</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
 :root {
   --sun: #FFB800;
@@ -237,7 +240,7 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
 
 <section class="hero">
   <div class="hero-left">
-    <div class="eyebrow"><div class="eyebrow-dot"></div>Coaching IA · Révision Bac 2025</div>
+    <div class="eyebrow"><div class="eyebrow-dot"></div>Coaching IA · Révision Bac 2026</div>
     <h1>Réussis ton Bac<span class="line2">sans te noyer</span><span class="line3">dans tes fiches.</span></h1>
     <p class="hero-desc">BacMentor analyse ton niveau en temps réel, identifie tes lacunes et t'entraîne sur mesure — comme un vrai coach, disponible à 23h avant ton exam.</p>
     <div class="hero-cta">
@@ -513,7 +516,31 @@ function addMsg(role,text){
 }
 
 function fmt(t){
-  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="background:var(--sun-pale);padding:0.1em 0.35em;border-radius:4px;font-size:0.9em">$1</code>').replace(/\n/g,'<br>');
+  // Markdown basique
+  let html = t
+    .replace(/^## (.+)$/gm,'<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:1rem;margin:0.8rem 0 0.3rem;color:var(--ink)">$1</div>')
+    .replace(/^### (.+)$/gm,'<div style="font-weight:700;font-size:0.9rem;margin:0.6rem 0 0.2rem;color:var(--ink)">$1</div>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`(.*?)`/g,'<code style="background:var(--sun-pale);padding:0.1em 0.35em;border-radius:4px;font-size:0.9em">$1</code>')
+    .replace(/^(\d+\.) (.+)$/gm,'<div style="padding:0.15rem 0 0.15rem 0.5rem;display:flex;gap:0.5rem"><span style="color:var(--ember);font-weight:700">$1</span><span>$2</span></div>')
+    .replace(/📌 À retenir :(.*?)(?=\n\n|\n[A-Z📌]|$)/gs,'<div style="background:var(--sun-pale);border-left:3px solid var(--sun);border-radius:8px;padding:0.7rem 1rem;margin:0.6rem 0;font-size:0.83rem">📌 <strong>À retenir :</strong>$1</div>')
+    .replace(/\n/g,'<br>');
+
+  // Rendu KaTeX si disponible
+  if (typeof renderMathInElement !== 'undefined') {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    renderMathInElement(div, {
+      delimiters: [
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false}
+      ],
+      throwOnError: false
+    });
+    return div.innerHTML;
+  }
+  return html;
 }
 
 function addTyping(){
