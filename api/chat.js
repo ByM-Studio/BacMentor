@@ -17,18 +17,65 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Corps de requête invalide.' });
     }
 
-    // Conversion format Gemini → format OpenAI
-    const messages = [];
+    // ── 1. DÉTECTION SUJETS SENSIBLES ──────────────────────────────────────
+    const lastUserMsg = [...contents].reverse().find(m => m.role === 'user');
+    const lastText = lastUserMsg?.parts?.[0]?.text?.toLowerCase() || '';
 
-    // Ajout du system prompt
-    if (systemInstruction?.parts?.[0]?.text) {
-      messages.push({
-        role: 'system',
-        content: systemInstruction.parts[0].text
+    const alertKeywords = [
+      'suicide','suicidaire','me tuer','envie de mourir','plus envie de vivre',
+      'harcèlement','harcelé','harcelée','on me harcèle',
+      'dépression','déprimé','déprimée','je veux mourir',
+      'me faire du mal','automutilation','me blesser',
+      'en danger','maltraitance','violence','abus'
+    ];
+
+    if (alertKeywords.some(kw => lastText.includes(kw))) {
+      return res.status(200).json({
+        candidates: [{
+          content: {
+            parts: [{ text: `Je t'entends, et ce que tu ressens est important. 💙\n\nJe suis un coach de révision, pas un professionnel de santé — mais je veux que tu saches que tu n'es pas seul(e).\n\n**Voici des numéros qui peuvent t'aider maintenant :**\n\n📞 **3114** — Numéro national de prévention du suicide (24h/24)\n📞 **3020** — Harcèlement scolaire\n📞 **119** — Enfance en danger\n🌐 **e-enfance.gouv.fr** — Aide en ligne\n\nSi tu veux, on peut continuer à réviser ensemble quand tu te sens prêt(e). Je suis là. 🤝` }]
+          }
+        }]
       });
     }
 
-    // Conversion des messages (Gemini: parts[].text → OpenAI: content)
+    // ── 2. REDIRECTION PACKS ───────────────────────────────────────────────
+    const packsKeywords = [
+      'cours complet','fiche complète','fiches complètes','tous les cours',
+      'document','pdf','fichier','télécharger','téléchargement',
+      'pack','packs','ressource','ressources','résumé complet'
+    ];
+
+    if (packsKeywords.some(kw => lastText.includes(kw))) {
+      return res.status(200).json({
+        candidates: [{
+          content: {
+            parts: [{ text: `Bonne idée ! 📦 J'ai justement des packs de révision complets (fiches, exercices corrigés, méthodes) disponibles en téléchargement gratuit.\n\n👉 **[Voir tous les packs → /packs.html](/packs.html)**\n\nEn attendant, je peux aussi t'expliquer n'importe quelle notion directement ici — qu'est-ce que tu veux qu'on travaille ensemble ? 🎯` }]
+          }
+        }]
+      });
+    }
+
+    // ── 3. CONSTRUCTION DES MESSAGES ───────────────────────────────────────
+    const messages = [];
+
+    // System prompt enrichi
+    const baseSystem = systemInstruction?.parts?.[0]?.text || '';
+    const enrichedSystem = baseSystem + `
+
+STYLE PÉDAGOGIQUE OBLIGATOIRE :
+- Méthode socratique : guide par des questions avant de donner la réponse
+- Structure tes réponses avec des titres clairs (## Titre), des étapes numérotées, et des encadrés "📌 À retenir :"
+- Jamais plus de 3 points par réponse — une chose à la fois
+- Langage simple, accessible à un lycéen, sans jargon inutile
+- Toujours encourageant, jamais condescendant
+- Pour les formules mathématiques, utilise la notation LaTeX entre $ pour inline (ex: $E=mc^2$) et $$ pour bloc
+- Si l'élève se trompe, explique POURQUOI avant de donner la bonne réponse
+- Termine toujours par une question ou un mini-exercice pour vérifier la compréhension`;
+
+    messages.push({ role: 'system', content: enrichedSystem });
+
+    // Conversion messages Gemini → OpenAI
     for (const msg of contents) {
       messages.push({
         role: msg.role === 'model' ? 'assistant' : 'user',
@@ -38,6 +85,7 @@ export default async function handler(req, res) {
 
     console.log('[BacMentor] Appel Groq | messages:', messages.length);
 
+    // ── 4. APPEL GROQ ──────────────────────────────────────────────────────
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -60,8 +108,9 @@ export default async function handler(req, res) {
       return res.status(groqRes.status).json({ error: data?.error?.message || 'Erreur Groq' });
     }
 
-    // Conversion réponse Groq → format Gemini (pour ne pas toucher au frontend)
     const replyText = data.choices?.[0]?.message?.content || 'Pas de réponse.';
+
+    // Conversion réponse → format Gemini (frontend inchangé)
     return res.status(200).json({
       candidates: [{
         content: {
