@@ -770,7 +770,35 @@ async function doRegister(){
     const data = await res.json();
     if(!res.ok){ showAuthError(data.error || 'Erreur d\'inscription.'); btn.disabled=false; btn.textContent='✦ Créer mon compte'; return; }
     showToast('🎉 Compte créé ! Bienvenue dans BacMentor.');
-    onAuthSuccess(data);
+  function onAuthSuccess(data){
+    APP.user       = { email: data.email, premium: !!data.premium, premiumSince: data.premiumSince };
+    APP.isPremium  = !!data.premium;
+    APP.isAnonymous = false;
+    localStorage.setItem(LS_USER, JSON.stringify(APP.user));
+
+    const btnR = document.getElementById('btn-register');
+    if(btnR){ btnR.disabled=false; btnR.textContent='✦ Créer mon compte'; }
+    const btnL = document.getElementById('btn-login');
+    if(btnL){ btnL.disabled=false; btnL.textContent='✦ Se connecter'; }
+
+    updateHeaderUser();
+    updatePricingSection();
+    applyPremiumFeatures(); // ← AJOUT
+    showPanel('setup');
+}
+function applyPremiumFeatures(){
+  if(APP.isPremium){
+    // Couronne
+    document.getElementById('user-crown').style.display = 'inline';
+    // Compteur illimité
+    const counter = document.getElementById('msg-counter');
+    if(counter){ counter.textContent='∞ Illimité'; counter.className='msg-counter unlimited'; }
+    // Upload débloqué
+    applyUploadRestriction();
+    applyUploadRestrictionFS();
+  }
+}
+
   } catch(e) { showAuthError('Erreur réseau. Réessaie.'); btn.disabled=false; btn.textContent='✦ Créer mon compte'; }
 }
 
@@ -801,6 +829,7 @@ function skipAuth(){
   APP.isAnonymous = true;
   updateHeaderUser();
   updatePricingSection();
+  applyPremiumFeatures();
   showPanel('setup');
 }
 
