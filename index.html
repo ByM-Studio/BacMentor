@@ -834,7 +834,7 @@ function showPanel(name) {
   if (name === 'auth') {
     authEl.style.display = '';
   } else if (name === 'setup') {
-    setupEl.style.display = '';
+    setupEl.style.display = 'block';
     initSetupPanel();
   } else if (name === 'chat') {
     // ✅ FIX BUG CHAT : utiliser display:flex explicitement
