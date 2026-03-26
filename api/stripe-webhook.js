@@ -10,18 +10,6 @@ async function buffer(readable) {
   return Buffer.concat(chunks);
 }
 
-async function saveToKV(email, data) {
-  const KV_URL = process.env.KV_REDIS_URL;
-  const restUrl = KV_URL.replace('redis://', 'https://').split('@')[1];
-  const [host, token] = restUrl.split(':');
-
-  await fetch(`https://${host}/hset/user:${email}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN || token}` },
-    body: JSON.stringify(data)
-  });
-}
-
 export default async function handler(req, res) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers['stripe-signature'];
@@ -37,10 +25,19 @@ export default async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const email = (session.customer_email || session.customer_details?.email || '').toLowerCase().trim();
+    const email = session.customer_email || session.metadata.customer_email;
+
     if (email) {
-      await saveToKV(email, { premium: "true", stripeCustomerId: session.customer });
+      const emailNorm = email.toLowerCase().trim();
+      // On met à jour directement via l'API REST
+      await fetch(`${process.env.KV_REST_API_URL}/hset/user:${emailNorm}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` },
+        body: JSON.stringify({ premium: "true" })
+      });
+      console.log(`[Premium] Activé pour ${emailNorm}`);
     }
   }
-  res.json({ received: true });
+
+  res.status(200).json({ received: true });
 }
