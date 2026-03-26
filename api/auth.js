@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 
-const KV_URL = process.env.KV_REST_API_URL;
+const KV_URL   = process.env.KV_REST_API_URL;
 const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 
 async function kvGet(email) {
@@ -17,16 +17,22 @@ async function kvGet(email) {
   return obj;
 }
 
-async function kvSet(email, userData) {
-  await fetch(`${KV_URL}/hset/user:${email}`, {
+async function kvSet(email, fields) {
+  // ✅ FIX : Upstash hset attend les champs dans l'URL ou en tableau
+  // Format correct pour l'API REST Upstash : /hset/key/field/value/field/value
+  const pairs = Object.entries(fields)
+    .map(([k, v]) => `/${encodeURIComponent(k)}/${encodeURIComponent(v)}`)
+    .join('');
+  await fetch(`${KV_URL}/hset/user:${email}${pairs}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${KV_TOKEN}` },
-    body: JSON.stringify(userData)
+    headers: { Authorization: `Bearer ${KV_TOKEN}` }
   });
 }
 
-function hashPwd(pwd) { 
-  return createHash('sha256').update(pwd + (process.env.PWD_SALT || 'bacmentor2026')).digest('hex'); 
+function hashPwd(pwd) {
+  return createHash('sha256')
+    .update(pwd + (process.env.PWD_SALT || 'bacmentor2026'))
+    .digest('hex');
 }
 
 export default async function handler(req, res) {
@@ -34,25 +40,77 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).end();
 
   try {
     const { action, email, password } = req.body || {};
     const emailNorm = (email || '').toLowerCase().trim();
     if (!emailNorm) return res.status(400).json({ error: 'Email manquant' });
 
-    const user = await kvGet(emailNorm);
-
+    // ✅ ACTION : register
     if (action === 'register') {
-      if (user) return res.status(409).json({ error: 'Compte déjà existant.' });
-      await kvSet(emailNorm, { passwordHash: hashPwd(password), premium: "false" });
+      if (!password || password.length < 6)
+        return res.status(400).json({ error: 'Mot de passe trop court.' });
+      const existing = await kvGet(emailNorm);
+      if (existing) return res.status(409).json({ error: 'Compte déjà existant.' });
+      await kvSet(emailNorm, {
+        passwordHash: hashPwd(password),
+        premium: 'false',
+        createdAt: Date.now().toString()
+      });
+      // ✅ FIX BUG PRINCIPAL : retourner email + premium comme login
+      return res.status(200).json({
+        ok: true,
+        email: emailNorm,
+        premium: false,
+        premiumSince: null
+      });
+    }
+
+    // ✅ ACTION : login
+    if (action === 'login') {
+      const user = await kvGet(emailNorm);
+      if (!user || user.passwordHash !== hashPwd(password))
+        return res.status(401).json({ error: 'Identifiants incorrects.' });
+      return res.status(200).json({
+        ok: true,
+        email: emailNorm,
+        premium: String(user.premium) === 'true',
+        premiumSince: user.premiumSince || null
+      });
+    }
+
+    // ✅ ACTION : check (vérifie le statut premium sans mot de passe)
+    if (action === 'check') {
+      const user = await kvGet(emailNorm);
+      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+      return res.status(200).json({
+        ok: true,
+        email: emailNorm,
+        premium: String(user.premium) === 'true',
+        premiumSince: user.premiumSince || null
+      });
+    }
+
+    // ✅ ACTION : activate-premium (appelé par le webhook Stripe)
+    if (action === 'activate-premium') {
+      const secret = req.headers['x-internal-secret'];
+      if (secret !== process.env.INTERNAL_SECRET)
+        return res.status(403).json({ error: 'Non autorisé.' });
+      const user = await kvGet(emailNorm);
+      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+      await kvSet(emailNorm, {
+        ...user,
+        premium: 'true',
+        premiumSince: Date.now().toString()
+      });
       return res.status(200).json({ ok: true });
     }
 
-    if (action === 'login') {
-      if (!user || user.passwordHash !== hashPwd(password)) return res.status(401).json({ error: 'Identifiants incorrects.' });
-      return res.status(200).json({ ok: true, email: emailNorm, premium: String(user.premium) === "true" });
-    }
+    return res.status(400).json({ error: 'Action inconnue.' });
+
   } catch (e) {
+    console.error('[BacMentor Auth]', e.message);
     return res.status(500).json({ error: e.message });
   }
 }
