@@ -825,19 +825,17 @@ function showPanel(name) {
   const setupEl = document.getElementById('setup-panel');
   const chatEl  = document.getElementById('chat-panel');
 
-  // Tout cacher d'abord
   authEl.style.display  = 'none';
   setupEl.style.display = 'none';
   chatEl.classList.remove('active');
   chatEl.style.display  = 'none';
 
   if (name === 'auth') {
-    authEl.style.display = '';
+    authEl.style.display = 'block';
   } else if (name === 'setup') {
     setupEl.style.display = 'block';
     initSetupPanel();
   } else if (name === 'chat') {
-    // ✅ FIX BUG CHAT : utiliser display:flex explicitement
     chatEl.style.display = 'flex';
     chatEl.classList.add('active');
   }
