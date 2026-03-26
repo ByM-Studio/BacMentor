@@ -679,95 +679,6 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
 
 <script>
 'use strict';
-window.addEventListener('DOMContentLoaded', () => {
-    // 1. On récupère les infos dans la mémoire du navigateur
-    const email = localStorage.getItem('userEmail');
-    const isPremium = localStorage.getItem('isPremium') === 'true';
-
-    // 2. Si l'utilisateur est déjà connecté, on affiche le chat direct
-    if (email) {
-        console.log("Session active pour :", email);
-        document.getElementById('auth-panel').style.display = 'none';
-        document.getElementById('setup-panel').style.display = 'none';
-        document.getElementById('chat-panel').style.display = 'flex';
-        
-        // Optionnel : afficher l'email dans la console pour débugger
-        if (isPremium) console.log("L'utilisateur est Premium !");
-    } else {
-        // Sinon, on s'assure que le panneau de login est bien visible
-        document.getElementById('auth-panel').style.display = 'flex';
-        document.getElementById('chat-panel').style.display = 'none';
-    }
-});
-// --- GESTION DE L'AUTHENTIFICATION ---
-
-async function handleAuth(action) {
-    // On récupère les champs selon l'onglet actif (Login ou Register)
-    const email = action === 'login' 
-        ? document.getElementById('login-email').value 
-        : document.getElementById('reg-email').value;
-    const password = action === 'login' 
-        ? document.getElementById('login-password').value 
-        : document.getElementById('reg-password').value;
-
-    if (!email || !password) {
-        alert("Remplis tous les champs, champion !");
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/auth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action, email, password })
-        });
-
-        const data = await res.json();
-
-        if (data.ok) {
-            if (action === 'register') {
-                alert("Compte créé ! Tu peux maintenant te connecter.");
-                // Petit tips : on bascule sur l'onglet login automatiquement
-                document.querySelector('.auth-tab[data-tab="login"]').click();
-            } else {
-                // CONNEXION RÉUSSIE
-                localStorage.setItem('userEmail', data.email);
-                localStorage.setItem('isPremium', data.premium); // Stocke true ou false
-                
-                // On recharge pour activer le chat proprement
-                location.reload();
-            }
-        } else {
-            alert(data.error || "Une erreur est survenue");
-        }
-    } catch (err) {
-        console.error("Erreur Auth:", err);
-        alert("Impossible de contacter le serveur.");
-    }
-}
-
-// --- DÉCONNEXION ---
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
-
-// --- INITIALISATION DES BOUTONS ---
-// On lie les fonctions aux boutons de ton HTML
-document.addEventListener('DOMContentLoaded', () => {
-    const btnLogin = document.querySelector('#auth-panel .btn-auth'); // Le bouton "C'est parti"
-    const btnLogout = document.querySelector('.btn-logout');
-
-    if (btnLogin) {
-        btnLogin.onclick = () => {
-            // On vérifie si on est sur l'onglet login ou register
-            const activeTab = document.querySelector('.auth-tab.active').dataset.tab;
-            handleAuth(activeTab);
-        };
-    }
-    
-    if (btnLogout) btnLogout.onclick = logout;
-});
 
 /* ════════════════════════════════════════════════════════════
    ÉTAT GLOBAL
@@ -830,7 +741,7 @@ function clearAuthError(){const el=document.getElementById('auth-error');el.clas
 ════════════════════════════════════════════════════════════ */
 async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
-  const pwd   = document.getElementById('login-pwd').value;
+ const pwd   = document.getElementById('login-pwd').value;
   if(!email || !pwd){ showAuthError('Remplis tous les champs.'); return; }
   const btn = document.getElementById('btn-login');
   btn.disabled = true; btn.textContent = 'Connexion…';
