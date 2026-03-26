@@ -10,9 +10,9 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
 :root {
-  --sun: #FFB800;--sun-light: #FFD84D;--sun-pale: #FFF3C4;--ember: #FF6B1A;--ember-light: #FF8C4A;
-  --white: #FFFFFF;--cream: #FFFDF5;--ink: #1A1200;--ink-mid: #3D2E00;--ink-soft: #7A6830;
-  --border: rgba(255,184,0,0.18);--shadow-sun: 0 8px 40px rgba(255,184,0,0.25);--shadow-ember: 0 8px 40px rgba(255,107,26,0.2);
+  --sun:#FFB800;--sun-light:#FFD84D;--sun-pale:#FFF3C4;--ember:#FF6B1A;--ember-light:#FF8C4A;
+  --white:#FFFFFF;--cream:#FFFDF5;--ink:#1A1200;--ink-mid:#3D2E00;--ink-soft:#7A6830;
+  --border:rgba(255,184,0,0.18);--shadow-sun:0 8px 40px rgba(255,184,0,0.25);--shadow-ember:0 8px 40px rgba(255,107,26,0.2);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -22,20 +22,29 @@ body{font-family:'Cabinet Grotesk',sans-serif;background:var(--cream);color:var(
 #solar-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.55;}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.6;}
 
-/* HEADER */
+/* ── HEADER ── */
 header{position:fixed;top:0;left:0;right:0;z-index:500;padding:1.1rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,253,245,.85);backdrop-filter:blur(20px) saturate(1.8);border-bottom:1px solid var(--border);animation:slideDown .7s cubic-bezier(.22,1,.36,1) both;}
 @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 .logo{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--ink);}
 .logo .accent{color:var(--sun);font-style:italic;}
 .logo-tag{display:inline-block;margin-left:.5rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;font-family:'Cabinet Grotesk',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:30px;vertical-align:middle;box-shadow:0 2px 10px rgba(255,107,26,.35);}
-nav{display:flex;align-items:center;gap:2.5rem;}
+nav{display:flex;align-items:center;gap:2rem;}
 nav a{font-size:.88rem;font-weight:500;color:var(--ink-soft);text-decoration:none;transition:color .2s;position:relative;}
 nav a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1.5px;background:var(--sun);transform:scaleX(0);transition:transform .2s;transform-origin:left;}
 nav a:hover{color:var(--ink);}nav a:hover::after{transform:scaleX(1);}
 .btn-nav{padding:.55rem 1.4rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:30px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:var(--shadow-ember);transition:transform .2s,box-shadow .2s;}
-.btn-nav:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 12px 32px rgba(255,107,26,.35);}
+.btn-nav:hover{transform:translateY(-2px) scale(1.03);}
 
-/* HERO */
+/* ── HEADER USER ZONE ── */
+.header-user{display:flex;align-items:center;gap:.8rem;}
+.user-badge{display:flex;align-items:center;gap:.5rem;background:var(--sun-pale);border:1px solid rgba(255,184,0,.3);border-radius:30px;padding:.35rem .9rem;font-size:.78rem;font-weight:600;color:var(--ink-mid);cursor:pointer;transition:all .2s;}
+.user-badge:hover{border-color:var(--sun);}
+.user-badge .avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--ember));display:flex;align-items:center;justify-content:center;color:white;font-size:.65rem;font-weight:800;}
+.premium-crown{font-size:.85rem;}
+.btn-logout{background:none;border:1.5px solid var(--border);border-radius:20px;padding:.3rem .8rem;font-size:.75rem;color:var(--ink-soft);cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;transition:all .2s;}
+.btn-logout:hover{border-color:var(--ember);color:var(--ember);}
+
+/* ── HERO ── */
 .hero{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4rem;padding:10rem 3rem 5rem;max-width:1280px;margin:0 auto;}
 .hero-left{animation:fadeUp .9s .2s cubic-bezier(.22,1,.36,1) both;}
 .hero-right{animation:fadeUp .9s .45s cubic-bezier(.22,1,.36,1) both;}
@@ -63,7 +72,7 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .stat-num sup{font-size:1rem;color:var(--ember);}
 .stat-label{font-size:.72rem;color:var(--ink-soft);margin-top:.2rem;font-weight:500;}
 
-/* CHAT CARD */
+/* ── CHAT CARD ── */
 .chat-card{background:white;border:1.5px solid var(--border);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(255,184,0,.15),0 8px 32px rgba(0,0,0,.06);position:relative;transition:box-shadow .3s;}
 .chat-card:hover{box-shadow:0 40px 100px rgba(255,184,0,.2),0 8px 32px rgba(0,0,0,.08);}
 .chat-card::before{content:'';position:absolute;inset:-2px;border-radius:30px;background:linear-gradient(135deg,var(--sun),var(--ember),var(--sun-light));z-index:-1;opacity:.6;animation:ringRot 4s linear infinite;}
@@ -76,8 +85,31 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .live-dot{width:7px;height:7px;border-radius:50%;background:#4AE580;box-shadow:0 0 0 3px rgba(74,229,128,.2);animation:livePulse 2s ease-in-out infinite;}
 @keyframes livePulse{0%,100%{box-shadow:0 0 0 3px rgba(74,229,128,.2)}50%{box-shadow:0 0 0 7px rgba(74,229,128,0)}}
 
-/* SETUP */
-#setup-panel{padding:1.5rem;}
+/* ── AUTH PANEL ── */
+#auth-panel{padding:1.5rem;}
+.auth-tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;background:var(--sun-pale);border-radius:12px;padding:.3rem;}
+.auth-tab{flex:1;padding:.5rem;border:none;background:transparent;border-radius:9px;font-family:'Cabinet Grotesk',sans-serif;font-size:.82rem;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:white;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.auth-form-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--ink);}
+.auth-field{margin-bottom:.85rem;}
+.auth-field label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.35rem;}
+.auth-field input{width:100%;padding:.65rem 1rem;background:var(--cream);border:1.5px solid rgba(255,184,0,.2);border-radius:11px;font-family:'Cabinet Grotesk',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+.auth-field input:focus{border-color:var(--sun);box-shadow:0 0 0 4px rgba(255,184,0,.12);}
+.auth-error{font-size:.78rem;color:#c0392b;background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.2);border-radius:8px;padding:.5rem .8rem;margin-bottom:.8rem;display:none;}
+.auth-error.show{display:block;}
+.btn-auth{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:14px;font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;font-style:italic;cursor:pointer;box-shadow:0 6px 24px rgba(255,107,26,.35);transition:transform .2s,box-shadow .2s;}
+.btn-auth:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,107,26,.45);}
+.btn-auth:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.auth-sep{text-align:center;font-size:.75rem;color:var(--ink-soft);margin:.9rem 0;position:relative;}
+.auth-sep::before,.auth-sep::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border);}
+.auth-sep::before{left:0;}.auth-sep::after{right:0;}
+.btn-skip{width:100%;padding:.65rem;background:transparent;border:1.5px solid var(--border);border-radius:12px;font-family:'Cabinet Grotesk',sans-serif;font-size:.82rem;color:var(--ink-soft);cursor:pointer;transition:all .2s;}
+.btn-skip:hover{border-color:var(--sun);color:var(--ink);}
+.plan-banner{display:flex;align-items:center;gap:.6rem;background:var(--sun-pale);border:1px solid rgba(255,184,0,.3);border-radius:10px;padding:.6rem .9rem;font-size:.76rem;color:var(--ink-mid);font-weight:600;margin-bottom:1rem;}
+.plan-banner.premium{background:linear-gradient(135deg,rgba(255,184,0,.15),rgba(255,107,26,.1));border-color:rgba(255,107,26,.3);}
+
+/* ── SETUP ── */
+#setup-panel{padding:1.5rem;display:none;}
 .form-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;color:var(--ink);}
 .field{margin-bottom:1rem;}
 .field label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
@@ -88,16 +120,23 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .chip{padding:.32rem .75rem;border-radius:20px;border:1.5px solid rgba(255,184,0,.25);background:white;font-size:.76rem;font-weight:500;cursor:pointer;transition:all .18s;user-select:none;color:var(--ink-soft);}
 .chip:hover{border-color:var(--sun);color:var(--ink);}
 .chip.active{background:linear-gradient(135deg,var(--sun),var(--ember));border-color:transparent;color:white;box-shadow:0 3px 12px rgba(255,107,26,.3);}
+.chip.locked{opacity:.45;cursor:not-allowed;border-style:dashed;}
+.chip-limit-note{font-size:.72rem;color:var(--ink-soft);margin-top:.5rem;display:none;}
+.chip-limit-note.show{display:block;}
+.field-locked{position:relative;}
+.field-locked-overlay{position:absolute;inset:0;background:rgba(255,253,245,.82);backdrop-filter:blur(2px);border-radius:12px;display:flex;align-items:center;justify-content:center;z-index:5;}
+.lock-msg{font-size:.78rem;color:var(--ink-soft);display:flex;align-items:center;gap:.4rem;background:white;border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;box-shadow:0 2px 10px rgba(0,0,0,.07);}
 .btn-launch{width:100%;margin-top:.8rem;padding:.95rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:16px;font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;font-style:italic;cursor:pointer;box-shadow:0 6px 24px rgba(255,107,26,.35);transition:transform .2s,box-shadow .2s;}
 .btn-launch:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,107,26,.45);}
 .btn-launch:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
 
-/* CHAT PANEL */
+/* ── CHAT PANEL ── */
 #chat-panel{display:none;flex-direction:column;height:500px;}
 .session-bar{padding:.55rem 1.2rem;background:var(--sun-pale);border-bottom:1px solid rgba(255,184,0,.2);font-size:.72rem;color:var(--ember);font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:.4rem;}
 .session-bar-left{display:flex;align-items:center;gap:.4rem;}
 .msg-counter{font-size:.68rem;font-weight:700;color:var(--ember);background:rgba(255,107,26,.1);border:1px solid rgba(255,107,26,.2);border-radius:20px;padding:.15rem .6rem;white-space:nowrap;transition:all .3s;}
 .msg-counter.warning{color:#c0392b;background:rgba(192,57,43,.1);border-color:rgba(192,57,43,.3);}
+.msg-counter.unlimited{color:#27ae60;background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.3);}
 .messages{flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:.9rem;scroll-behavior:smooth;}
 .messages::-webkit-scrollbar{width:4px;}
 .messages::-webkit-scrollbar-thumb{background:rgba(255,184,0,.3);border-radius:4px;}
@@ -123,15 +162,16 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .input-area{padding:.8rem 1.1rem;border-top:1px solid var(--border);display:flex;gap:.6rem;align-items:flex-end;background:white;}
 .chat-input{flex:1;padding:.7rem 1rem;border:1.5px solid rgba(255,184,0,.25);border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-size:.86rem;outline:none;resize:none;max-height:100px;background:var(--cream);transition:border-color .2s,box-shadow .2s;color:var(--ink);}
 .chat-input:focus{border-color:var(--sun);box-shadow:0 0 0 4px rgba(255,184,0,.1);}
-.btn-upload{width:40px;height:40px;border-radius:12px;background:var(--cream);border:1.5px solid rgba(255,184,0,.3);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:all .2s;}
-.btn-upload:hover{border-color:var(--sun);color:var(--ink);background:var(--sun-pale);}
+.btn-upload{width:40px;height:40px;border-radius:12px;background:var(--cream);border:1.5px solid rgba(255,184,0,.3);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:all .2s;position:relative;}
+.btn-upload:hover:not([disabled]){border-color:var(--sun);color:var(--ink);background:var(--sun-pale);}
 .btn-upload.has-image{background:linear-gradient(135deg,var(--sun-pale),#ffe8a0);border-color:var(--sun);color:var(--ember);}
 .btn-upload:disabled{opacity:.35;cursor:not-allowed;}
+.btn-upload .lock-icon{position:absolute;bottom:-2px;right:-2px;font-size:.6rem;background:var(--ink-soft);color:white;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
 .btn-send{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--sun),var(--ember));border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,107,26,.35);transition:transform .15s,box-shadow .15s;flex-shrink:0;}
-.btn-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(255,107,26,.45);}
+.btn-send:hover{transform:scale(1.1);}
 .btn-send:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 
-/* UPGRADE */
+/* ── UPGRADE CARD ── */
 .msg-upgrade{align-self:center;width:100%;max-width:100%;}
 .upgrade-card{background:linear-gradient(135deg,var(--ink),var(--ink-mid));border-radius:20px;padding:1.5rem;text-align:center;border:1px solid rgba(255,184,0,.25);}
 .upgrade-emoji{font-size:2rem;margin-bottom:.6rem;}
@@ -139,18 +179,26 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .upgrade-text{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:1.2rem;}
 .upgrade-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;}
 .btn-upgrade{display:inline-block;padding:.65rem 1.5rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:30px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 6px 20px rgba(255,107,26,.4);text-decoration:none;transition:transform .2s,box-shadow .2s;}
-.btn-upgrade:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,26,.55);}
+.btn-upgrade:hover{transform:translateY(-2px);}
 .btn-upgrade-ghost{display:inline-block;padding:.65rem 1.5rem;background:transparent;color:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.2);border-radius:30px;font-family:'Cabinet Grotesk',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;text-decoration:none;transition:all .2s;}
 .btn-upgrade-ghost:hover{border-color:rgba(255,255,255,.5);color:white;}
 
-/* MARQUEE */
+/* ── PREMIUM FEATURE BLOCKED ── */
+.feature-blocked{background:linear-gradient(135deg,rgba(255,184,0,.08),rgba(255,107,26,.05));border:1.5px dashed rgba(255,184,0,.35);border-radius:16px;padding:1rem 1.2rem;text-align:center;margin:.5rem 0;}
+.feature-blocked-icon{font-size:1.4rem;margin-bottom:.3rem;}
+.feature-blocked-title{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.2rem;}
+.feature-blocked-sub{font-size:.75rem;color:var(--ink-soft);margin-bottom:.7rem;}
+.btn-feature-unlock{padding:.45rem 1.1rem;background:linear-gradient(135deg,var(--sun),var(--ember));color:white;border:none;border-radius:20px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:transform .2s;}
+.btn-feature-unlock:hover{transform:translateY(-1px);}
+
+/* ── MARQUEE ── */
 .marquee-wrap{position:relative;z-index:2;overflow:hidden;padding:1.1rem 0;background:linear-gradient(135deg,var(--sun),var(--ember));border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2);}
 .marquee-track{display:flex;gap:3rem;width:max-content;animation:marquee 22s linear infinite;}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .marquee-item{display:flex;align-items:center;gap:.6rem;font-size:.82rem;font-weight:700;color:white;white-space:nowrap;letter-spacing:.02em;}
 .marquee-sep{color:rgba(255,255,255,.4);font-size:1.2rem;}
 
-/* FEATURES */
+/* ── FEATURES ── */
 .features-section{position:relative;z-index:2;padding:7rem 3rem;max-width:1280px;margin:0 auto;}
 .section-header{max-width:600px;margin-bottom:4rem;}
 .section-kicker{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ember);margin-bottom:1rem;}
@@ -162,12 +210,12 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .feat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-sun);}
 .feat-card:hover::before{opacity:1;}
 .feat-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.4rem;}
-.fi-a{background:linear-gradient(135deg,#FFF3C4,#FFE57A);}.fi-b{background:linear-gradient(135deg,#FFE0D0,#FFB899);}.fi-c{background:linear-gradient(135deg,#D0F0E0,#7ADCB0);}
-.fi-d{background:linear-gradient(135deg,#D0E4FF,#7AB4FF);}.fi-e{background:linear-gradient(135deg,#F0D0FF,#C87AFF);}.fi-f{background:linear-gradient(135deg,#FFD0D0,#FF7A7A);}
+.fi-a{background:linear-gradient(135deg,#FFF3C4,#FFE57A)}.fi-b{background:linear-gradient(135deg,#FFE0D0,#FFB899)}.fi-c{background:linear-gradient(135deg,#D0F0E0,#7ADCB0)}
+.fi-d{background:linear-gradient(135deg,#D0E4FF,#7AB4FF)}.fi-e{background:linear-gradient(135deg,#F0D0FF,#C87AFF)}.fi-f{background:linear-gradient(135deg,#FFD0D0,#FF7A7A)}
 .feat-card h3{font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;margin-bottom:.6rem;color:var(--ink);}
 .feat-card p{font-size:.84rem;color:var(--ink-soft);line-height:1.65;}
 
-/* HOW */
+/* ── HOW ── */
 .how-section{position:relative;z-index:2;padding:7rem 3rem;background:var(--ink);color:white;overflow:hidden;}
 .how-inner{max-width:1280px;margin:0 auto;}
 .how-section .section-title{color:white;}.how-section .section-title em{color:var(--sun);}
@@ -179,7 +227,7 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .step p{font-size:.83rem;color:rgba(255,255,255,.5);line-height:1.65;}
 .step-arrow{position:absolute;top:2.8rem;right:-1.2rem;color:rgba(255,184,0,.3);font-size:1.5rem;}
 
-/* PRICING */
+/* ── PRICING ── */
 .pricing-section{position:relative;z-index:2;padding:7rem 3rem;max-width:1280px;margin:0 auto;}
 .pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:4rem;max-width:800px;margin-left:auto;margin-right:auto;}
 .price-card{background:white;border:1.5px solid var(--border);border-radius:28px;padding:2.4rem;transition:transform .25s,box-shadow .25s;position:relative;overflow:hidden;}
@@ -190,7 +238,7 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .price-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;}
 .plan-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
 .price-card.highlight .plan-label{color:rgba(255,255,255,.45);}
-.pop-badge{background:linear-gradient(135deg,var(--sun),var(--ember));color:white;font-size:.62rem;font-weight:800;padding:.25rem .8rem;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 3px 10px rgba(255,107,26,.4);}
+.pop-badge{background:linear-gradient(135deg,var(--sun),var(--ember));color:white;font-size:.62rem;font-weight:800;padding:.25rem .8rem;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;}
 .price-amount{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;letter-spacing:-.05em;line-height:1;margin-bottom:.3rem;color:var(--ink);}
 .price-card.highlight .price-amount{color:white;}
 .price-amount small{font-size:1rem;font-weight:400;color:var(--ink-soft);}
@@ -211,13 +259,13 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .btn-price{width:100%;padding:.85rem;border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:.5rem;}
 .btn-price:hover{background:var(--ink);color:white;border-color:var(--ink);}
 .btn-price-stripe{background:linear-gradient(135deg,var(--sun),var(--ember));border:none;color:white;box-shadow:0 6px 20px rgba(255,107,26,.35);}
-.btn-price-stripe:hover{box-shadow:0 10px 28px rgba(255,107,26,.5);transform:translateY(-2px);background:linear-gradient(135deg,var(--sun),var(--ember));}
-.btn-price-paypal{background:#003087;border:none;color:white;font-size:.85rem;}
-.btn-price-paypal:hover{background:#002070;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,48,135,.35);}
+.btn-price-stripe:hover{transform:translateY(-2px);}
+.btn-price-paypal{background:#003087;border:none;color:white;}
+.btn-price-paypal:hover{background:#002070;transform:translateY(-2px);}
 .price-note{font-size:.72rem;color:var(--ink-soft);text-align:center;margin-top:.5rem;}
 .price-card.highlight .price-note{color:rgba(255,255,255,.3);}
 
-/* TÉMOIGNAGES CAROUSEL */
+/* ── TESTI ── */
 .testi-section{position:relative;z-index:2;padding:5rem 3rem;background:linear-gradient(180deg,var(--sun-pale) 0%,var(--cream) 100%);border-top:1px solid rgba(255,184,0,.2);}
 .testi-inner{max-width:1280px;margin:0 auto;}
 .testi-carousel{position:relative;margin-top:3.5rem;overflow:hidden;}
@@ -232,19 +280,12 @@ h1 .line2{font-style:italic;color:var(--sun);display:block;}h1 .line3{display:bl
 .testi-role{font-size:.72rem;color:var(--ink-soft);}
 .testi-controls{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:2rem;}
 .testi-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:white;color:var(--ink-soft);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.testi-btn:hover{border-color:var(--sun);color:var(--ink);box-shadow:var(--shadow-sun);}
+.testi-btn:hover{border-color:var(--sun);color:var(--ink);}
 .testi-dots{display:flex;gap:.5rem;align-items:center;}
 .testi-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,184,0,.25);cursor:pointer;transition:all .3s;}
 .testi-dot.active{background:var(--sun);width:20px;border-radius:4px;}
 
-/* FOOTER */
-footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--cream);}
-.foot-copy{font-size:.8rem;color:var(--ink-soft);}
-.foot-links{display:flex;gap:1.5rem;}
-.foot-links a{font-size:.8rem;color:var(--ink-soft);text-decoration:none;}
-.foot-links a:hover{color:var(--ember);}
-
-/* MODAL */
+/* ── MODAL PAIEMENT ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(26,18,0,.6);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:white;border-radius:28px;padding:2.5rem;max-width:440px;width:100%;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.25);animation:modalIn .35s cubic-bezier(.22,1,.36,1);}
@@ -263,20 +304,26 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
 .modal-methods{display:flex;flex-direction:column;gap:.8rem;}
 .modal-method-btn{width:100%;padding:.95rem 1.2rem;border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:.6rem;transition:all .2s;}
 .modal-stripe{background:linear-gradient(135deg,var(--sun),var(--ember));color:white;box-shadow:0 6px 20px rgba(255,107,26,.35);}
-.modal-stripe:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,26,.5);}
+.modal-stripe:hover{transform:translateY(-2px);}
 .modal-paypal{background:#003087;color:white;}
-.modal-paypal:hover{background:#002070;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,48,135,.35);}
-.modal-paypal .pp{font-style:italic;font-weight:800;}.modal-paypal .pp span{color:#009cde;}
+.modal-paypal:hover{background:#002070;transform:translateY(-2px);}
 .modal-divider{text-align:center;font-size:.75rem;color:var(--ink-soft);position:relative;margin:.2rem 0;}
 .modal-divider::before,.modal-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
 .modal-divider::before{left:0;}.modal-divider::after{right:0;}
 .modal-secure{text-align:center;font-size:.72rem;color:var(--ink-soft);margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.4rem;}
 
-/* TOAST */
+/* ── FOOTER ── */
+footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--cream);}
+.foot-copy{font-size:.8rem;color:var(--ink-soft);}
+.foot-links{display:flex;gap:1.5rem;}
+.foot-links a{font-size:.8rem;color:var(--ink-soft);text-decoration:none;}
+.foot-links a:hover{color:var(--ember);}
+
+/* ── TOAST ── */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:white;padding:.8rem 1.6rem;border-radius:30px;font-size:.85rem;font-weight:600;z-index:2000;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s;opacity:0;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
-/* RESPONSIVE */
+/* ── RESPONSIVE ── */
 @media(max-width:1024px){.features-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.step-arrow{display:none}.testi-card{flex:0 0 calc(50% - .75rem);}}
 @media(max-width:768px){
   .hero{grid-template-columns:1fr;padding:8rem 1.5rem 3rem;gap:3rem}header{padding:1rem 1.5rem}nav a{display:none}
@@ -308,7 +355,7 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
     <div class="modal-methods">
       <button class="modal-method-btn modal-stripe" id="modal-btn-stripe" onclick="startStripeCheckout()">💳 Payer par carte bancaire</button>
       <div class="modal-divider">ou</div>
-      <button class="modal-method-btn modal-paypal" onclick="startPaypalCheckout()"><span class="pp">Pay<span>Pal</span></span> — Payer avec PayPal</button>
+      <button class="modal-method-btn modal-paypal" onclick="startPaypalCheckout()"><span style="font-style:italic;font-weight:800">Pay<span style="color:#009cde">Pal</span></span> &nbsp;Payer avec PayPal</button>
     </div>
     <div class="modal-secure">🔒 Paiement sécurisé · Stripe & PayPal · Données chiffrées</div>
   </div>
@@ -326,6 +373,15 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
     <a href="#pricing">Tarifs</a>
     <button class="btn-nav" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">Essai gratuit →</button>
   </nav>
+  <!-- Zone utilisateur dans le header -->
+  <div class="header-user" id="header-user" style="display:none;">
+    <div class="user-badge" id="user-badge" onclick="document.getElementById('chat-anchor').scrollIntoView({behavior:'smooth'})">
+      <div class="avatar" id="user-avatar">?</div>
+      <span id="user-email-short">—</span>
+      <span class="premium-crown" id="user-crown" style="display:none;">👑</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+  </div>
 </header>
 
 <section class="hero">
@@ -350,18 +406,76 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
         <div><div class="bot-name">BacMentor</div><div class="bot-sub">Coach IA · Personnalisé pour toi</div></div>
         <div class="status-live"><div class="live-dot"></div>En ligne</div>
       </div>
+
+      <!-- ══ AUTH PANEL ══ -->
+      <div id="auth-panel">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+          <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Créer un compte</button>
+        </div>
+        <div class="auth-error" id="auth-error"></div>
+
+        <!-- LOGIN -->
+        <div id="form-login">
+          <p class="auth-form-title">Content de te revoir ! 👋</p>
+          <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="prenom@exemple.fr" autocomplete="email"></div>
+          <div class="auth-field"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+          <button class="btn-auth" id="btn-login" onclick="doLogin()">✦ Se connecter</button>
+          <div class="auth-sep">ou</div>
+          <button class="btn-skip" onclick="skipAuth()">Continuer sans compte (version gratuite)</button>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="form-register" style="display:none;">
+          <p class="auth-form-title">Crée ton compte BacMentor 🎓</p>
+          <div class="auth-field"><label>Email</label><input type="email" id="reg-email" placeholder="prenom@exemple.fr" autocomplete="email"></div>
+          <div class="auth-field"><label>Mot de passe (6 caractères min)</label><input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password"></div>
+          <div class="auth-field"><label>Confirmer le mot de passe</label><input type="password" id="reg-pwd2" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+          <button class="btn-auth" id="btn-register" onclick="doRegister()">✦ Créer mon compte</button>
+          <div class="auth-sep">ou</div>
+          <button class="btn-skip" onclick="skipAuth()">Continuer sans compte (version gratuite)</button>
+        </div>
+      </div>
+
+      <!-- ══ SETUP PANEL ══ -->
       <div id="setup-panel">
+        <div class="plan-banner" id="setup-plan-banner">
+          🎓 <span id="setup-plan-text">Plan gratuit · 1 matière · 30 messages/jour</span>
+        </div>
         <p class="form-title">Crée ton profil de révision</p>
         <div class="field"><label>Ta filière</label>
           <select id="filiere"><option value="">Choisir ta filière…</option><option>Générale (Spécialités)</option><option>Technologique STI2D</option><option>Technologique STMG</option><option>Technologique ST2S</option><option>Professionnelle</option></select></div>
-        <div class="field"><label>Matières à travailler</label>
-          <div class="chips"><div class="chip" data-val="Mathématiques">Maths</div><div class="chip" data-val="Physique-Chimie">Physique</div><div class="chip" data-val="NSI">NSI</div><div class="chip" data-val="SIN / STI2D">SIN</div><div class="chip" data-val="Français">Français</div><div class="chip" data-val="Histoire-Géo">Hist-Géo</div><div class="chip" data-val="SVT">SVT</div><div class="chip" data-val="Anglais">Anglais</div><div class="chip" data-val="Philosophie">Philo</div><div class="chip" data-val="ITEC / STI2D">ITEC</div><div class="chip" data-val="AC / STI2D">AC</div><div class="chip" data-val="HLP / GENERALE">HLP</div><div class="chip" data-val="HGGSP / GENERALE">HGGSP</div><div class="chip" data-val="LLCE / GENERALE">LLCE</div><div class="chip" data-val="SES / GENERALE">SES</div><div class="chip" data-val="ECO-GESTION / STMG">Eco-Gestion</div><div class="chip" data-val="MANAGEMENT / STMG">Management</div></div></div>
+        <div class="field">
+          <label>Matière à travailler <span id="chip-limit-badge" style="font-size:.68rem;color:var(--ember);font-weight:700;"></span></label>
+          <div class="chips" id="chips-container">
+            <div class="chip" data-val="Mathématiques">Maths</div>
+            <div class="chip" data-val="Physique-Chimie">Physique</div>
+            <div class="chip" data-val="NSI">NSI</div>
+            <div class="chip" data-val="SIN / STI2D">SIN</div>
+            <div class="chip" data-val="Français">Français</div>
+            <div class="chip" data-val="Histoire-Géo">Hist-Géo</div>
+            <div class="chip" data-val="SVT">SVT</div>
+            <div class="chip" data-val="Anglais">Anglais</div>
+            <div class="chip" data-val="Philosophie">Philo</div>
+            <div class="chip" data-val="ITEC / STI2D">ITEC</div>
+            <div class="chip" data-val="AC / STI2D">AC</div>
+            <div class="chip" data-val="HLP / GENERALE">HLP</div>
+            <div class="chip" data-val="HGGSP / GENERALE">HGGSP</div>
+            <div class="chip" data-val="LLCE / GENERALE">LLCE</div>
+            <div class="chip" data-val="SES / GENERALE">SES</div>
+            <div class="chip" data-val="ECO-GESTION / STMG">Eco-Gestion</div>
+            <div class="chip" data-val="MANAGEMENT / STMG">Management</div>
+          </div>
+          <div class="chip-limit-note" id="chip-limit-note">⚠️ Plan gratuit : 1 matière maximum. <button style="background:none;border:none;color:var(--ember);font-weight:700;cursor:pointer;font-size:.72rem;" onclick="openModal()">Passer Premium →</button></div>
+        </div>
         <div class="field"><label>Ton niveau actuel</label>
           <select id="niveau"><option value="">Évalue-toi honnêtement…</option><option>En difficulté (moy. &lt; 10)</option><option>Moyen (10–13)</option><option>Bon (13–16)</option><option>Très bon (16+)</option></select></div>
         <div class="field"><label>Tes points faibles (optionnel)</label>
           <textarea id="faibles" placeholder="Ex : dérivées, dissertation, réseaux IP…"></textarea></div>
         <button class="btn-launch" id="btn-launch" onclick="startCoaching()">✦ Lancer ma session personnalisée</button>
       </div>
+
+      <!-- ══ CHAT PANEL ══ -->
       <div id="chat-panel">
         <div class="session-bar">
           <div class="session-bar-left">✦ <span id="session-label">Session active</span></div>
@@ -375,12 +489,16 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
         </div>
         <div class="input-area">
           <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
-          <button class="btn-upload" id="btn-upload" onclick="document.getElementById('file-input').click()" title="Envoyer une image">📎</button>
+          <button class="btn-upload" id="btn-upload" title="Envoyer une image (Premium)">
+            📎
+            <span class="lock-icon" id="upload-lock" style="display:none;">🔒</span>
+          </button>
           <textarea class="chat-input" id="chat-input" rows="1" placeholder="Réponds à l'exercice ou pose ta question…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
           <button class="btn-send" id="btn-send" onclick="sendMessage()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
         </div>
       </div>
     </div>
+
     <div class="stats-row" style="margin-top:1.2rem;">
       <div class="stat-pill"><div class="stat-num">3<sup>×</sup></div><div class="stat-label">Plus efficace</div></div>
       <div class="stat-pill"><div class="stat-num">24/7</div><div class="stat-label">Disponible</div></div>
@@ -506,10 +624,31 @@ footer{position:relative;z-index:2;padding:2.5rem 3rem;border-top:1px solid var(
 </footer>
 
 <script>
-/* ── CURSOR ── */
-const cursor=document.getElementById('cursor'),trail=document.getElementById('cursor-trail');
-let mx=0,my=0,tx=0,ty=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx-6}px,${my-6}px)`;});
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   ÉTAT GLOBAL
+════════════════════════════════════════════════════════════ */
+const APP = {
+  user: null,          // { email, premium, premiumSince } ou null
+  isPremium: false,
+  isAnonymous: false,  // true si "continuer sans compte"
+};
+
+const FREE_LIMIT = 30;
+const LS_USER    = 'bm_user';
+const LS_COUNT   = 'bm_msg_count';
+const LS_DATE    = 'bm_msg_date';
+
+/* ════════════════════════════════════════════════════════════
+   CURSOR
+════════════════════════════════════════════════════════════ */
+const cursor = document.getElementById('cursor'), trail = document.getElementById('cursor-trail');
+let mx=0, my=0, tx=0, ty=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cursor.style.transform = `translate(${mx-6}px,${my-6}px)`;
+});
 function animTrail(){tx+=(mx-tx)*.12;ty+=(my-ty)*.12;trail.style.transform=`translate(${tx-16}px,${ty-16}px)`;requestAnimationFrame(animTrail);}
 animTrail();
 document.querySelectorAll('button,a,.chip,.feat-card,.price-card,.stat-pill').forEach(el=>{
@@ -517,192 +656,480 @@ document.querySelectorAll('button,a,.chip,.feat-card,.price-card,.stat-pill').fo
   el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';});
 });
 
-/* ── SOLAR CANVAS ── */
+/* ════════════════════════════════════════════════════════════
+   SOLAR CANVAS
+════════════════════════════════════════════════════════════ */
 const canvas=document.getElementById('solar-canvas'),ctx=canvas.getContext('2d');
-let W,H,particles=[];
+let W,H;
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-resize();window.addEventListener('resize',resize);
+resize(); window.addEventListener('resize',resize);
 class Particle{constructor(){this.reset();}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*3+1;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4-.15;this.life=1;this.decay=Math.random()*.003+.001;this.hue=Math.random()*30+35;}update(){this.x+=this.vx;this.y+=this.vy;this.life-=this.decay;if(this.life<=0||this.y<-20)this.reset();}draw(){ctx.save();ctx.globalAlpha=this.life*.35;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`hsl(${this.hue},100%,60%)`;ctx.fill();ctx.restore();}}
-for(let i=0;i<80;i++)particles.push(new Particle());
+const particles=[]; for(let i=0;i<80;i++) particles.push(new Particle());
 const blobs=[{x:.15,y:.2,r:320,c:'rgba(255,184,0,.06)'},{x:.85,y:.5,r:280,c:'rgba(255,107,26,.05)'},{x:.5,y:.85,r:350,c:'rgba(255,216,77,.05)'}];
 function drawFrame(){ctx.clearRect(0,0,W,H);blobs.forEach(b=>{const g=ctx.createRadialGradient(b.x*W,b.y*H,0,b.x*W,b.y*H,b.r);g.addColorStop(0,b.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);});particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(drawFrame);}
 drawFrame();
 
-/* ── CHIPS ── */
-document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('active')));
-
-/* ── TÉMOIGNAGES ── */
-const ALL_TESTI=[
-  {text:"J'avais 8 en maths en janvier. Avec BacMentor je suis passé à 14 au Bac. Le coach s'adapte à mes erreurs en direct, c'est incroyable.",name:"Lucas M.",role:"Terminale Générale · Mention Bien",init:"L"},
-  {text:"En STI2D je galérais sur les diagrammes SysML. BacMentor m'a fait pratiquer avec des exercices ciblés. Mention TB !",name:"Amira K.",role:"Terminale STI2D · Mention Très Bien",init:"A"},
-  {text:"La dispo 24/7 c'est game changer. La veille du Bac à 1h du mat j'ai pu pratiquer mes plans de dissert. Impossible avec un vrai prof.",name:"Raphaël D.",role:"Terminale Générale · Mention Assez Bien",init:"R"},
-  {text:"J'avais peur de la philo mais BacMentor m'a appris à structurer mes idées pas à pas. J'ai eu 16, ma meilleure note du Bac !",name:"Inès B.",role:"Terminale Générale · Philo 16/20",init:"I"},
-  {text:"Le mode upload d'image est top. Je photo mon exo de physique et le coach me guide sans jamais donner la réponse directement.",name:"Tom V.",role:"Terminale STI2D · Physique-Chimie",init:"T"},
-  {text:"Mes parents m'ont pris le plan Premium à 5€, franchement c'est le meilleur investissement pour le Bac. Validé avec mention.",name:"Chloé M.",role:"Terminale STMG · Mention Bien",init:"C"},
-  {text:"BacMentor m'a aidé à décrocher 17 en SVT grâce aux fiches générées après chaque session. Je recommande à tous mes potes.",name:"Nassim A.",role:"Terminale Générale · SVT 17/20",init:"N"},
-  {text:"Je suis nulle en maths mais BacMentor m'a redonné confiance. Je recommence depuis zéro et le coach ne juge jamais.",name:"Jade P.",role:"Terminale Générale · Niveau en difficulté → Moyen",init:"J"},
-  {text:"L'aspect socratique est vraiment différent des autres applis. On réfléchit vraiment au lieu de juste copier des corrections.",name:"Mathieu C.",role:"Terminale Générale · NSI",init:"M"},
-  {text:"En STMG management, les exos correspondent exactement au programme. J'ai eu 15, je suis trop contente !",name:"Fatou S.",role:"Terminale STMG · Management 15/20",init:"F"},
-  {text:"Même pas besoin d'un répétiteur à 40€/h. BacMentor fait le même boulot, 24h/24, pour 5€ par mois. C'est logique.",name:"Pierre H.",role:"Terminale Générale · Mathématiques",init:"P"},
-  {text:"Le suivi de progression m'a montré que je bloquais sur les intégrales. On a tout revu et j'ai cartonné à l'oral de maths.",name:"Sarah K.",role:"Terminale Générale · Mention Très Bien",init:"S"}
-];
-
-function dailyShuffle(arr){
-  const seed=Math.floor(Date.now()/86400000);
-  const s=[...arr];
-  for(let i=s.length-1;i>0;i--){const j=Math.abs((seed*(i+1)*1234567+i*9876543))%(i+1);[s[i],s[j]]=[s[j],s[i]];}
-  return s;
+/* ════════════════════════════════════════════════════════════
+   AUTH — TABS
+════════════════════════════════════════════════════════════ */
+function switchTab(tab){
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('form-login').style.display  = tab==='login'    ? '' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? '' : 'none';
+  clearAuthError();
 }
-const TESTI=dailyShuffle(ALL_TESTI);
-let testiIdx=0,testiTimer=null;
+function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.classList.add('show');}
+function clearAuthError(){const el=document.getElementById('auth-error');el.classList.remove('show');}
 
-function cpv(){return window.innerWidth<=600?1:window.innerWidth<=1024?2:3;}
+/* ════════════════════════════════════════════════════════════
+   AUTH — LOGIN
+════════════════════════════════════════════════════════════ */
+async function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value;
+  if(!email || !pwd){ showAuthError('Remplis tous les champs.'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Connexion…';
+  try {
+    const res  = await fetch('/api/auth', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'login', email, password:pwd }) });
+    const data = await res.json();
+    if(!res.ok){ showAuthError(data.error || 'Erreur de connexion.'); btn.disabled=false; btn.textContent='✦ Se connecter'; return; }
+    onAuthSuccess(data);
+  } catch(e) { showAuthError('Erreur réseau. Réessaie.'); btn.disabled=false; btn.textContent='✦ Se connecter'; }
+}
 
-function buildTesti(){
-  const track=document.getElementById('testi-track');
-  const dotsEl=document.getElementById('testi-dots');
-  track.innerHTML='';dotsEl.innerHTML='';
-  TESTI.forEach(t=>{
-    const c=document.createElement('div');c.className='testi-card';
-    c.innerHTML=`<div class="stars-row">★★★★★</div><p class="testi-text">"${t.text}"</p><div class="testi-author"><div class="testi-av">${t.init}</div><div><div class="testi-name">${t.name}</div><div class="testi-role">${t.role}</div></div></div>`;
-    track.appendChild(c);
+/* ════════════════════════════════════════════════════════════
+   AUTH — REGISTER
+════════════════════════════════════════════════════════════ */
+async function doRegister(){
+  const email = document.getElementById('reg-email').value.trim();
+  const pwd   = document.getElementById('reg-pwd').value;
+  const pwd2  = document.getElementById('reg-pwd2').value;
+  if(!email||!pwd||!pwd2){ showAuthError('Remplis tous les champs.'); return; }
+  if(pwd !== pwd2){ showAuthError('Les mots de passe ne correspondent pas.'); return; }
+  if(pwd.length < 6){ showAuthError('Mot de passe trop court (6 caractères min).'); return; }
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true; btn.textContent = 'Création…';
+  try {
+    const res  = await fetch('/api/auth', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'register', email, password:pwd }) });
+    const data = await res.json();
+    if(!res.ok){ showAuthError(data.error || 'Erreur d\'inscription.'); btn.disabled=false; btn.textContent='✦ Créer mon compte'; return; }
+    showToast('🎉 Compte créé ! Bienvenue dans BacMentor.');
+    onAuthSuccess(data);
+  } catch(e) { showAuthError('Erreur réseau. Réessaie.'); btn.disabled=false; btn.textContent='✦ Créer mon compte'; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   AUTH — SUCCÈS & LOGOUT
+════════════════════════════════════════════════════════════ */
+function onAuthSuccess(data){
+  APP.user       = { email: data.email, premium: !!data.premium, premiumSince: data.premiumSince };
+  APP.isPremium  = !!data.premium;
+  APP.isAnonymous = false;
+  localStorage.setItem(LS_USER, JSON.stringify(APP.user));
+  updateHeaderUser();
+  goToSetup();
+}
+
+function skipAuth(){
+  APP.user       = null;
+  APP.isPremium  = false;
+  APP.isAnonymous = true;
+  updateHeaderUser();
+  goToSetup();
+}
+
+function logout(){
+  APP.user = null; APP.isPremium = false; APP.isAnonymous = false;
+  localStorage.removeItem(LS_USER);
+  // Revenir à l'auth panel
+  document.getElementById('auth-panel').style.display = '';
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('chat-panel').style.display = 'none';
+  document.getElementById('header-user').style.display = 'none';
+  showToast('Déconnecté. À bientôt !');
+}
+
+function updateHeaderUser(){
+  const zone = document.getElementById('header-user');
+  if(!APP.user && !APP.isAnonymous){ zone.style.display='none'; return; }
+  zone.style.display = 'flex';
+  if(APP.isAnonymous){
+    document.getElementById('user-avatar').textContent = '👤';
+    document.getElementById('user-email-short').textContent = 'Visiteur';
+    document.getElementById('user-crown').style.display = 'none';
+  } else {
+    const initial = APP.user.email[0].toUpperCase();
+    document.getElementById('user-avatar').textContent = initial;
+    document.getElementById('user-email-short').textContent = APP.user.email.split('@')[0];
+    document.getElementById('user-crown').style.display = APP.isPremium ? '' : 'none';
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   SETUP — GESTION DES RESTRICTIONS FREEMIUM
+════════════════════════════════════════════════════════════ */
+function goToSetup(){
+  document.getElementById('auth-panel').style.display = 'none';
+  document.getElementById('setup-panel').style.display = '';
+
+  // Bannière plan
+  const banner   = document.getElementById('setup-plan-banner');
+  const bannerTxt = document.getElementById('setup-plan-text');
+  const chipLabel = document.querySelector('#setup-panel .field label');
+
+  if(APP.isPremium){
+    banner.classList.add('premium');
+    bannerTxt.textContent = '👑 Plan Premium · Toutes matières · Messages illimités';
+    document.querySelector('#setup-panel .field label').textContent = 'Matières à travailler';
+    document.getElementById('chip-limit-badge').textContent = '';
+  } else {
+    banner.classList.remove('premium');
+    bannerTxt.textContent = '🎓 Plan gratuit · 1 matière · 30 messages/jour';
+    document.querySelector('#setup-panel .field label').textContent = 'Matière à travailler';
+    document.getElementById('chip-limit-badge').textContent = '(1 max)';
+  }
+
+  // Réinitialiser chips
+  document.querySelectorAll('.chip').forEach(c => { c.classList.remove('active','locked'); });
+  document.getElementById('chip-limit-note').classList.remove('show');
+
+  // Setup chips selon plan
+  setupChips();
+
+  // Bouton upload
+  applyUploadRestriction();
+}
+
+function setupChips(){
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = null;
+    chip.classList.remove('locked');
+    chip.addEventListener('click', handleChipClick);
   });
-  const total=Math.ceil(TESTI.length/cpv());
-  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='testi-dot'+(i===0?' active':'');d.onclick=()=>goTesti(i);dotsEl.appendChild(d);}
-  goTesti(0);
 }
-function goTesti(idx){
-  const n=cpv();const max=Math.max(0,Math.ceil(TESTI.length/n)-1);
-  testiIdx=Math.max(0,Math.min(idx,max));
-  const track=document.getElementById('testi-track');
-  const cw=(track.children[0]?.offsetWidth||0)+24;
-  track.style.transform=`translateX(-${testiIdx*n*cw}px)`;
-  document.querySelectorAll('.testi-dot').forEach((d,i)=>d.classList.toggle('active',i===testiIdx));
-}
-function testiNext(){const max=Math.ceil(TESTI.length/cpv())-1;goTesti(testiIdx>=max?0:testiIdx+1);resetAuto();}
-function testiPrev(){const max=Math.ceil(TESTI.length/cpv())-1;goTesti(testiIdx<=0?max:testiIdx-1);resetAuto();}
-function resetAuto(){clearInterval(testiTimer);testiTimer=setInterval(testiNext,5000);}
-buildTesti();window.addEventListener('resize',buildTesti);
-testiTimer=setInterval(testiNext,5000);
 
-/* ── FREEMIUM — 30 msg/jour ── */
-const FREE_LIMIT=30,LS_C='bacmentor_msg_count',LS_D='bacmentor_msg_date';
-function todayKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;}
-function getMsgCount(){if(localStorage.getItem(LS_D)!==todayKey()){localStorage.setItem(LS_D,todayKey());localStorage.setItem(LS_C,'0');return 0;}return parseInt(localStorage.getItem(LS_C)||'0',10);}
-function incrMsg(){const n=getMsgCount()+1;localStorage.setItem(LS_C,n);localStorage.setItem(LS_D,todayKey());return n;}
-function limitReached(){return getMsgCount()>=FREE_LIMIT;}
-function updateCounter(){const r=Math.max(0,FREE_LIMIT-getMsgCount());const el=document.getElementById('msg-counter');if(!el)return;el.textContent=r<=1?`${r} message restant`:`${r} messages restants`;el.classList.toggle('warning',r<=8);}
+function handleChipClick(e){
+  const chip = e.currentTarget;
+  if(chip.classList.contains('locked')) return;
+
+  const active = document.querySelectorAll('.chip.active');
+
+  if(chip.classList.contains('active')){
+    // Désélectionner
+    chip.classList.remove('active');
+    document.getElementById('chip-limit-note').classList.remove('show');
+    // Si gratuit, déverrouiller tous les chips
+    if(!APP.isPremium){
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('locked'));
+    }
+    return;
+  }
+
+  // Sélectionner
+  if(!APP.isPremium && active.length >= 1){
+    // Gratuit : 1 matière max
+    document.getElementById('chip-limit-note').classList.add('show');
+    return;
+  }
+
+  chip.classList.add('active');
+
+  // Gratuit : verrouiller les autres chips
+  if(!APP.isPremium){
+    document.querySelectorAll('.chip:not(.active)').forEach(c => c.classList.add('locked'));
+  }
+}
+
+function applyUploadRestriction(){
+  const btn = document.getElementById('btn-upload');
+  const lockIcon = document.getElementById('upload-lock');
+  if(APP.isPremium){
+    btn.disabled = false;
+    btn.title = 'Envoyer une image';
+    lockIcon.style.display = 'none';
+    btn.onclick = () => document.getElementById('file-input').click();
+  } else {
+    btn.disabled = false; // cliquable pour afficher le message
+    lockIcon.style.display = 'flex';
+    btn.title = 'Upload réservé aux membres Premium';
+    btn.onclick = () => {
+      showToast('📎 L\'upload est réservé aux membres Premium. Passe à 5€/mois !');
+      setTimeout(() => openModal(), 800);
+    };
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   COMPTEUR DE MESSAGES
+════════════════════════════════════════════════════════════ */
+function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; }
+
+function getMsgCount(){
+  if(localStorage.getItem(LS_DATE) !== todayKey()){ localStorage.setItem(LS_DATE,todayKey()); localStorage.setItem(LS_COUNT,'0'); return 0; }
+  return parseInt(localStorage.getItem(LS_COUNT)||'0',10);
+}
+function incrMsg(){ const n=getMsgCount()+1; localStorage.setItem(LS_COUNT,n); localStorage.setItem(LS_DATE,todayKey()); return n; }
+function limitReached(){ if(APP.isPremium) return false; return getMsgCount() >= FREE_LIMIT; }
+
+function updateCounter(){
+  const el = document.getElementById('msg-counter');
+  if(!el) return;
+  if(APP.isPremium){
+    el.textContent = '∞ Illimité';
+    el.className = 'msg-counter unlimited';
+    return;
+  }
+  const r = Math.max(0, FREE_LIMIT - getMsgCount());
+  el.textContent = r<=1 ? `${r} message restant` : `${r} messages restants`;
+  el.className = 'msg-counter' + (r<=8 ? ' warning' : '');
+}
 
 function showUpgrade(){
-  const msgs=document.getElementById('messages');
-  const d=document.createElement('div');d.className='msg msg-upgrade';
-  d.innerHTML=`<div class="upgrade-card"><div class="upgrade-emoji">🚀</div><div class="upgrade-title">Tu as utilisé tes 30 messages du jour !</div><div class="upgrade-text">Reviens demain gratuitement, ou passe à <strong style="color:var(--sun)">BacMentor Premium</strong> pour des messages illimités, l'upload 📎, les fiches IA et plus — seulement <strong style="color:var(--sun)">5€/mois</strong>.</div><div class="upgrade-btns"><button class="btn-upgrade" onclick="openModal()">✨ Passer Premium — 5€/mois</button><a class="btn-upgrade-ghost" href="#pricing" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">En savoir plus</a></div></div>`;
-  msgs.appendChild(d);d.style.opacity='0';d.style.transform='translateY(10px)';
-  requestAnimationFrame(()=>{d.style.transition='opacity .4s,transform .4s';d.style.opacity='1';d.style.transform='translateY(0)';});
+  const msgs = document.getElementById('messages');
+  const d = document.createElement('div'); d.className='msg msg-upgrade';
+  d.innerHTML=`<div class="upgrade-card"><div class="upgrade-emoji">🚀</div><div class="upgrade-title">Tu as utilisé tes 30 messages du jour !</div><div class="upgrade-text">Reviens demain gratuitement, ou passe à <strong style="color:var(--sun)">BacMentor Premium</strong> pour des messages illimités, l'upload 📎, les fiches IA et plus — seulement <strong style="color:var(--sun)">5€/mois</strong>.</div><div class="upgrade-btns"><button class="btn-upgrade" onclick="openModal()">✨ Passer Premium — 5€/mois</button><a class="btn-upgrade-ghost" href="#pricing">En savoir plus</a></div></div>`;
+  msgs.appendChild(d);
+  requestAnimationFrame(()=>{d.style.opacity='0';d.style.transform='translateY(10px)';d.style.transition='opacity .4s,transform .4s';requestAnimationFrame(()=>{d.style.opacity='1';d.style.transform='translateY(0)';});});
   msgs.scrollTop=msgs.scrollHeight;
-  document.getElementById('chat-input').disabled=true;document.getElementById('btn-send').disabled=true;document.getElementById('btn-upload').disabled=true;
+  document.getElementById('chat-input').disabled=true;
+  document.getElementById('btn-send').disabled=true;
+  document.getElementById('btn-upload').disabled=true;
   document.getElementById('chat-input').placeholder='Limite atteinte — reviens demain ou passe Premium 🚀';
 }
 
-/* ── MODAL ── */
-function openModal(m){document.getElementById('payment-modal').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('modal-email').focus(),300);}
-function closeModal(){document.getElementById('payment-modal').classList.remove('open');document.body.style.overflow='';}
-document.getElementById('payment-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+/* ════════════════════════════════════════════════════════════
+   MODAL PAIEMENT
+════════════════════════════════════════════════════════════ */
+function openModal(m){
+  document.getElementById('payment-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Pré-remplir l'email si connecté
+  if(APP.user) document.getElementById('modal-email').value = APP.user.email;
+  setTimeout(()=>document.getElementById('modal-email').focus(),300);
+}
+function closeModal(){ document.getElementById('payment-modal').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('payment-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeModal(); });
 
 async function startStripeCheckout(){
-  const email=document.getElementById('modal-email').value.trim();
-  const btn=document.getElementById('modal-btn-stripe');
-  btn.textContent='Chargement…';btn.disabled=true;
+  const email = document.getElementById('modal-email').value.trim();
+  const btn   = document.getElementById('modal-btn-stripe');
+  btn.textContent='Chargement…'; btn.disabled=true;
   try{
-    const res=await fetch('/api/create-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
-    const data=await res.json();
-    if(data.url){window.location.href=data.url;}
-    else{showToast('Erreur : '+(data.error||'impossible de créer la session.'));btn.textContent='💳 Payer par carte bancaire';btn.disabled=false;}
-  }catch(e){showToast('Erreur réseau. Réessaie dans un instant.');btn.textContent='💳 Payer par carte bancaire';btn.disabled=false;}
+    const res  = await fetch('/api/create-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data = await res.json();
+    if(data.url){ window.location.href=data.url; }
+    else{ showToast('Erreur : '+(data.error||'impossible de créer la session.')); btn.textContent='💳 Payer par carte bancaire'; btn.disabled=false; }
+  }catch(e){ showToast('Erreur réseau.'); btn.textContent='💳 Payer par carte bancaire'; btn.disabled=false; }
 }
-function startPaypalCheckout(){
-  // ⚠️ Remplace VOTRE_PSEUDO par ton pseudo PayPal.me
-  window.open('https://www.paypal.com/paypalme/VOTRE_PSEUDO/5','_blank');
-  showToast('Redirection vers PayPal…');
-}
+function startPaypalCheckout(){ window.open('https://www.paypal.com/paypalme/VOTRE_PSEUDO/5','_blank'); showToast('Redirection vers PayPal…'); }
 
-window.addEventListener('DOMContentLoaded',()=>{
-  const p=new URLSearchParams(window.location.search);
-  if(p.get('payment')==='success'){showToast('🎉 Paiement confirmé ! Bienvenue dans BacMentor Premium.');window.history.replaceState({},'','/');}
-  else if(p.get('payment')==='cancelled'){showToast('Paiement annulé. Tu peux réessayer à tout moment.');window.history.replaceState({},'','/');}
-});
+/* ════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════ */
+function showToast(msg,d=3500){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),d); }
 
-/* ── TOAST ── */
-function showToast(msg,d=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
-
-/* ── UPLOAD IMAGE ── */
-let pendingImg=null,pendingName=null;
+/* ════════════════════════════════════════════════════════════
+   IMAGE UPLOAD (Premium seulement — restriction côté UI)
+════════════════════════════════════════════════════════════ */
+let pendingImg=null, pendingName=null;
 function handleImageSelect(e){
-  const f=e.target.files[0];if(!f)return;
-  if(f.size>4*1024*1024){alert('Image trop lourde (max 4 Mo).');e.target.value='';return;}
+  if(!APP.isPremium){ showToast('📎 Upload réservé au plan Premium !'); return; }
+  const f=e.target.files[0]; if(!f) return;
+  if(f.size>4*1024*1024){ alert('Image trop lourde (max 4 Mo).'); e.target.value=''; return; }
   const r=new FileReader();
-  r.onload=ev=>{pendingImg=ev.target.result;pendingName=f.name;document.getElementById('image-preview-thumb').src=pendingImg;document.getElementById('preview-name').textContent=f.name;document.getElementById('image-preview-bar').style.display='flex';document.getElementById('btn-upload').classList.add('has-image');document.getElementById('chat-input').placeholder='Ajoute un commentaire ou envoie directement…';};
-  r.readAsDataURL(f);e.target.value='';
+  r.onload=ev=>{
+    pendingImg=ev.target.result; pendingName=f.name;
+    document.getElementById('image-preview-thumb').src=pendingImg;
+    document.getElementById('preview-name').textContent=f.name;
+    document.getElementById('image-preview-bar').style.display='flex';
+    document.getElementById('btn-upload').classList.add('has-image');
+    document.getElementById('chat-input').placeholder='Ajoute un commentaire ou envoie directement…';
+  };
+  r.readAsDataURL(f); e.target.value='';
 }
-function removeImage(){pendingImg=null;pendingName=null;document.getElementById('image-preview-bar').style.display='none';document.getElementById('btn-upload').classList.remove('has-image');document.getElementById('chat-input').placeholder='Réponds à l\'exercice ou pose ta question…';}
+function removeImage(){ pendingImg=null; pendingName=null; document.getElementById('image-preview-bar').style.display='none'; document.getElementById('btn-upload').classList.remove('has-image'); document.getElementById('chat-input').placeholder='Réponds à l\'exercice ou pose ta question…'; }
 
-/* ── COACHING ── */
-let profile={},history=[],isLoading=false;
+/* ════════════════════════════════════════════════════════════
+   COACHING
+════════════════════════════════════════════════════════════ */
+let profile={}, history=[], isLoading=false;
+
 async function startCoaching(){
-  const filiere=document.getElementById('filiere').value;const niveau=document.getElementById('niveau').value;
-  const faibles=document.getElementById('faibles').value.trim();
-  const matieres=[...document.querySelectorAll('.chip.active')].map(c=>c.dataset.val);
-  if(!filiere||!niveau||!matieres.length){alert('Remplis ta filière, ton niveau et au moins une matière 👆');return;}
-  profile={filiere,niveau,matieres,faibles};
-  document.getElementById('setup-panel').style.display='none';document.getElementById('chat-panel').style.display='flex';
-  document.getElementById('session-label').textContent=`${filiere} · ${matieres.join(', ')}`;
-  updateCounter();if(limitReached()){showUpgrade();return;}
-  await callAPI(`Bonjour ! Profil : ${filiere}, niveau "${niveau}", matières : ${matieres.join(', ')}.${faibles?` Points faibles : ${faibles}.`:''} Lance ma session !`,true);
+  const filiere = document.getElementById('filiere').value;
+  const niveau  = document.getElementById('niveau').value;
+  const faibles = document.getElementById('faibles').value.trim();
+  const matieres = [...document.querySelectorAll('.chip.active')].map(c=>c.dataset.val);
+
+  if(!filiere||!niveau||!matieres.length){ alert('Remplis ta filière, ton niveau et au moins une matière 👆'); return; }
+
+  // Vérification stricte côté client
+  if(!APP.isPremium && matieres.length > 1){
+    showToast('⚠️ Plan gratuit : 1 seule matière autorisée !');
+    return;
+  }
+
+  profile = { filiere, niveau, matieres, faibles };
+  document.getElementById('setup-panel').style.display='none';
+  document.getElementById('chat-panel').style.display='flex';
+  document.getElementById('session-label').textContent = `${filiere} · ${matieres.join(', ')}`;
+
+  updateCounter();
+  if(limitReached()){ showUpgrade(); return; }
+
+  await callAPI(`Bonjour ! Profil : ${filiere}, niveau "${niveau}", matières : ${matieres.join(', ')}.${faibles?` Points faibles : ${faibles}.`:''} Lance ma session !`, true);
 }
-function buildSystem(p){return `Tu es BacMentor, coach de révision expert et motivant pour le Bac français.\nPROFIL : Filière ${p.filiere} · Niveau ${p.niveau} · Matières : ${p.matieres.join(', ')} · Points faibles : ${p.faibles||'non précisés'}\nMISSION : 1.Diagnostiquer les lacunes 2.Exercices progressifs 3.Corriger en expliquant le POURQUOI 4.Encourager 5.Adapter la difficulté\nSTYLE : Direct, clair, chaleureux. Une chose à la fois. Emojis pour dynamiser. Toujours en français. Commence par un accueil motivant puis une première question de diagnostic.`;}
+
+function buildSystem(p){
+  const premiumInstructions = APP.isPremium
+    ? `\nFONCTIONS PREMIUM ACTIVÉES : Tu peux proposer des simulations d'épreuves complètes, générer des fiches de révision détaillées, analyser les photos de cours uploadées par l'élève, et assurer un suivi de progression avancé.`
+    : `\nPLAN GRATUIT : Exercices de base et corrections uniquement. Ne propose PAS de simulation d'épreuves complètes ni de fiches IA générées — ces fonctions sont réservées au Premium. Si l'élève demande ces fonctions, informe-le gentiment qu'elles sont disponibles avec le plan Premium à 5€/mois.`;
+
+  return `Tu es BacMentor, coach de révision expert et motivant pour le Bac français.
+PROFIL : Filière ${p.filiere} · Niveau ${p.niveau} · Matières : ${p.matieres.join(', ')} · Points faibles : ${p.faibles||'non précisés'}
+MISSION : 1.Diagnostiquer les lacunes 2.Exercices progressifs 3.Corriger en expliquant le POURQUOI 4.Encourager 5.Adapter la difficulté
+STYLE : Direct, clair, chaleureux. Une chose à la fois. Emojis pour dynamiser. Toujours en français.${premiumInstructions}
+Commence par un accueil motivant puis une première question de diagnostic.`;
+}
+
 async function sendMessage(){
-  const inp=document.getElementById('chat-input');const txt=inp.value.trim();
-  if((!txt&&!pendingImg)||isLoading)return;if(limitReached()){showUpgrade();return;}
-  inp.value='';inp.style.height='auto';inp.placeholder='Réponds à l\'exercice ou pose ta question…';
-  const parts=[];if(pendingImg)parts.push({image_url:{url:pendingImg}});parts.push({text:txt||'Analyse cette image dans le contexte de mes révisions.'});
-  addMsg('user',txt||'',pendingImg);removeImage();await callAPI(null,false,parts);
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim();
+  if((!txt && !pendingImg) || isLoading) return;
+  if(limitReached()){ showUpgrade(); return; }
+
+  // Double-check upload côté client
+  if(pendingImg && !APP.isPremium){ showToast('📎 Upload réservé au plan Premium !'); removeImage(); return; }
+
+  inp.value=''; inp.style.height='auto';
+  inp.placeholder='Réponds à l\'exercice ou pose ta question…';
+  const parts=[]; if(pendingImg) parts.push({image_url:{url:pendingImg}}); parts.push({text:txt||'Analyse cette image dans le contexte de mes révisions.'});
+  addMsg('user', txt||'', pendingImg); removeImage();
+  await callAPI(null, false, parts);
 }
-async function callAPI(userText,isFirst,userParts){
-  isLoading=true;document.getElementById('btn-send').disabled=true;
-  if(userText!==null){if(!isFirst)addMsg('user',userText);history.push({role:'user',parts:[{text:userText}]});}
+
+async function callAPI(userText, isFirst, userParts){
+  isLoading=true; document.getElementById('btn-send').disabled=true;
+  if(userText!==null){ if(!isFirst) addMsg('user',userText); history.push({role:'user',parts:[{text:userText}]}); }
   else history.push({role:'user',parts:userParts});
-  if(!isFirst){incrMsg();updateCounter();}
+  if(!isFirst){ incrMsg(); updateCounter(); }
   const typing=addTyping();
   try{
     const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:history,systemInstruction:{parts:[{text:buildSystem(profile)}]}})});
-    const data=await res.json();removeTyping(typing);
+    const data=await res.json(); removeTyping(typing);
     const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Erreur de réponse.';
-    history.push({role:'model',parts:[{text:reply}]});addMsg('coach',reply);
-    if(!isFirst&&limitReached())showUpgrade();
-  }catch(e){removeTyping(typing);addMsg('coach',"Erreur réseau. Vérifie que l'API est déployée sur Vercel.");}
-  isLoading=false;document.getElementById('btn-send').disabled=false;document.getElementById('chat-input').focus();
+    history.push({role:'model',parts:[{text:reply}]}); addMsg('coach',reply);
+    if(!isFirst && !APP.isPremium && limitReached()) showUpgrade();
+  }catch(e){ removeTyping(typing); addMsg('coach',"Erreur réseau. Vérifie que l'API est déployée sur Vercel."); }
+  isLoading=false; document.getElementById('btn-send').disabled=false; document.getElementById('chat-input').focus();
 }
+
 function addMsg(role,text,imgUrl){
-  const msgs=document.getElementById('messages');const d=document.createElement('div');d.className=`msg ${role}`;
-  let html='';if(imgUrl&&role==='user')html+=`<img class="msg-img" src="${imgUrl}" alt="image">`;if(text)html+=fmt(text);
+  const msgs=document.getElementById('messages'); const d=document.createElement('div'); d.className=`msg ${role}`;
+  let html=''; if(imgUrl&&role==='user') html+=`<img class="msg-img" src="${imgUrl}" alt="image">`; if(text) html+=fmt(text);
   d.innerHTML=`<div class="msg-av">${role==='coach'?'🎓':'👤'}</div><div class="msg-bubble">${html}</div>`;
-  msgs.appendChild(d);d.style.opacity='0';d.style.transform='translateY(10px)';
+  msgs.appendChild(d); d.style.opacity='0'; d.style.transform='translateY(10px)';
   requestAnimationFrame(()=>{d.style.transition='opacity .35s,transform .35s';d.style.opacity='1';d.style.transform='translateY(0)';});
   msgs.scrollTop=msgs.scrollHeight;
 }
+
 function fmt(t){
-  let h=t.replace(/^## (.+)$/gm,'<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:1rem;margin:.8rem 0 .3rem;color:var(--ink)">$1</div>').replace(/^### (.+)$/gm,'<div style="font-weight:700;font-size:.9rem;margin:.6rem 0 .2rem;color:var(--ink)">$1</div>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="background:var(--sun-pale);padding:.1em .35em;border-radius:4px;font-size:.9em">$1</code>').replace(/^(\d+\.) (.+)$/gm,'<div style="padding:.15rem 0 .15rem .5rem;display:flex;gap:.5rem"><span style="color:var(--ember);font-weight:700">$1</span><span>$2</span></div>').replace(/📌 À retenir :(.*?)(?=\n\n|\n[A-Z📌]|$)/gs,'<div style="background:var(--sun-pale);border-left:3px solid var(--sun);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0;font-size:.83rem">📌 <strong>À retenir :</strong>$1</div>').replace(/\n/g,'<br>');
+  let h=t
+    .replace(/^## (.+)$/gm,'<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:1rem;margin:.8rem 0 .3rem;color:var(--ink)">$1</div>')
+    .replace(/^### (.+)$/gm,'<div style="font-weight:700;font-size:.9rem;margin:.6rem 0 .2rem;color:var(--ink)">$1</div>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`(.*?)`/g,'<code style="background:var(--sun-pale);padding:.1em .35em;border-radius:4px;font-size:.9em">$1</code>')
+    .replace(/^(\d+\.) (.+)$/gm,'<div style="padding:.15rem 0 .15rem .5rem;display:flex;gap:.5rem"><span style="color:var(--ember);font-weight:700">$1</span><span>$2</span></div>')
+    .replace(/📌 À retenir :(.*?)(?=\n\n|\n[A-Z📌]|$)/gs,'<div style="background:var(--sun-pale);border-left:3px solid var(--sun);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0;font-size:.83rem">📌 <strong>À retenir :</strong>$1</div>')
+    .replace(/\n/g,'<br>');
   if(typeof renderMathInElement!=='undefined'){const d=document.createElement('div');d.innerHTML=h;renderMathInElement(d,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});return d.innerHTML;}
   return h;
 }
+
 function addTyping(){const m=document.getElementById('messages');const w=document.createElement('div');w.className='msg coach';w.id='typing-wrap';w.innerHTML='<div class="msg-av">🎓</div><div class="typing"><span></span><span></span><span></span></div>';m.appendChild(w);m.scrollTop=m.scrollHeight;return w;}
 function removeTyping(el){if(el)el.remove();}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 
-/* ── SCROLL REVEAL ── */
+/* ════════════════════════════════════════════════════════════
+   TÉMOIGNAGES
+════════════════════════════════════════════════════════════ */
+const ALL_TESTI=[
+  {text:"J'avais 8 en maths en janvier. Avec BacMentor je suis passé à 14 au Bac. Le coach s'adapte à mes erreurs en direct, c'est incroyable.",name:"Lucas M.",role:"Terminale Générale · Mention Bien",init:"L"},
+  {text:"En STI2D je galérais sur les diagrammes SysML. BacMentor m'a fait pratiquer avec des exercices ciblés. Mention TB !",name:"Amira K.",role:"Terminale STI2D · Mention Très Bien",init:"A"},
+  {text:"La dispo 24/7 c'est game changer. La veille du Bac à 1h du mat j'ai pu pratiquer mes plans de dissert.",name:"Raphaël D.",role:"Terminale Générale · Mention Assez Bien",init:"R"},
+  {text:"J'avais peur de la philo mais BacMentor m'a appris à structurer mes idées pas à pas. J'ai eu 16, ma meilleure note du Bac !",name:"Inès B.",role:"Terminale Générale · Philo 16/20",init:"I"},
+  {text:"Le mode upload d'image est top. Je photo mon exo de physique et le coach me guide sans jamais donner la réponse directement.",name:"Tom V.",role:"Terminale STI2D · Physique-Chimie",init:"T"},
+  {text:"Mes parents m'ont pris le plan Premium à 5€, franchement c'est le meilleur investissement pour le Bac.",name:"Chloé M.",role:"Terminale STMG · Mention Bien",init:"C"},
+  {text:"BacMentor m'a aidé à décrocher 17 en SVT grâce aux fiches générées après chaque session.",name:"Nassim A.",role:"Terminale Générale · SVT 17/20",init:"N"},
+  {text:"Je suis nulle en maths mais BacMentor m'a redonné confiance. Je recommence depuis zéro et le coach ne juge jamais.",name:"Jade P.",role:"Terminale Générale · Niveau en difficulté → Moyen",init:"J"},
+  {text:"L'aspect socratique est vraiment différent des autres applis. On réfléchit vraiment au lieu de juste copier des corrections.",name:"Mathieu C.",role:"Terminale Générale · NSI",init:"M"},
+  {text:"En STMG management, les exos correspondent exactement au programme. J'ai eu 15, je suis trop contente !",name:"Fatou S.",role:"Terminale STMG · Management 15/20",init:"F"},
+  {text:"Même pas besoin d'un répétiteur à 40€/h. BacMentor fait le même boulot, 24h/24, pour 5€ par mois.",name:"Pierre H.",role:"Terminale Générale · Mathématiques",init:"P"},
+  {text:"Le suivi de progression m'a montré que je bloquais sur les intégrales. On a tout revu et j'ai cartonné.",name:"Sarah K.",role:"Terminale Générale · Mention Très Bien",init:"S"}
+];
+function dailyShuffle(arr){const seed=Math.floor(Date.now()/86400000);const s=[...arr];for(let i=s.length-1;i>0;i--){const j=Math.abs((seed*(i+1)*1234567+i*9876543))%(i+1);[s[i],s[j]]=[s[j],s[i]];}return s;}
+const TESTI=dailyShuffle(ALL_TESTI);
+let testiIdx=0,testiTimer=null;
+function cpv(){return window.innerWidth<=600?1:window.innerWidth<=1024?2:3;}
+function buildTesti(){
+  const track=document.getElementById('testi-track');const dotsEl=document.getElementById('testi-dots');track.innerHTML='';dotsEl.innerHTML='';
+  TESTI.forEach(t=>{const c=document.createElement('div');c.className='testi-card';c.innerHTML=`<div class="stars-row">★★★★★</div><p class="testi-text">"${t.text}"</p><div class="testi-author"><div class="testi-av">${t.init}</div><div><div class="testi-name">${t.name}</div><div class="testi-role">${t.role}</div></div></div>`;track.appendChild(c);});
+  const total=Math.ceil(TESTI.length/cpv());for(let i=0;i<total;i++){const d=document.createElement('div');d.className='testi-dot'+(i===0?' active':'');d.onclick=()=>goTesti(i);dotsEl.appendChild(d);}
+  goTesti(0);
+}
+function goTesti(idx){const n=cpv();const max=Math.max(0,Math.ceil(TESTI.length/n)-1);testiIdx=Math.max(0,Math.min(idx,max));const track=document.getElementById('testi-track');const cw=(track.children[0]?.offsetWidth||0)+24;track.style.transform=`translateX(-${testiIdx*n*cw}px)`;document.querySelectorAll('.testi-dot').forEach((d,i)=>d.classList.toggle('active',i===testiIdx));}
+function testiNext(){const max=Math.ceil(TESTI.length/cpv())-1;goTesti(testiIdx>=max?0:testiIdx+1);resetAuto();}
+function testiPrev(){const max=Math.ceil(TESTI.length/cpv())-1;goTesti(testiIdx<=0?max:testiIdx-1);resetAuto();}
+function resetAuto(){clearInterval(testiTimer);testiTimer=setInterval(testiNext,5000);}
+buildTesti(); window.addEventListener('resize',buildTesti);
+testiTimer=setInterval(testiNext,5000);
+
+/* ════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════════════════════ */
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:.1});
 document.querySelectorAll('.feat-card,.price-card,.step').forEach((el,i)=>{el.style.opacity='0';el.style.transform='translateY(30px)';el.style.transition=`opacity .6s ${i*.08}s,transform .6s ${i*.08}s`;obs.observe(el);});
+
+/* ════════════════════════════════════════════════════════════
+   INIT — RESTAURER SESSION & GÉRER RETOUR STRIPE
+════════════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', async () => {
+  // Retour paiement Stripe
+  const p = new URLSearchParams(window.location.search);
+  if(p.get('payment')==='success'){
+    showToast('🎉 Paiement confirmé ! Bienvenue dans BacMentor Premium. Reconnecte-toi pour activer ton accès.', 5000);
+    window.history.replaceState({},'','/');
+  } else if(p.get('payment')==='cancelled'){
+    showToast('Paiement annulé. Tu peux réessayer à tout moment.');
+    window.history.replaceState({},'','/');
+  }
+
+  // Restaurer session si déjà connecté
+  const saved = localStorage.getItem(LS_USER);
+  if(saved){
+    try{
+      const user = JSON.parse(saved);
+      // Re-vérifier le statut premium en temps réel
+      try{
+        const check = await fetch('/api/auth', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'check',email:user.email,password:''})});
+        // Note: check ne nécessite pas de mot de passe
+        const fresh = await check.json();
+        user.premium = fresh.premium;
+        user.premiumSince = fresh.premiumSince;
+        localStorage.setItem(LS_USER, JSON.stringify(user));
+      }catch(e){ /* offline — utiliser le cache */ }
+      APP.user       = user;
+      APP.isPremium  = !!user.premium;
+      APP.isAnonymous = false;
+      updateHeaderUser();
+      goToSetup();
+    }catch(e){ localStorage.removeItem(LS_USER); }
+  }
+  // Sinon : auth panel affiché par défaut
+});
 </script>
 </body>
 </html>
