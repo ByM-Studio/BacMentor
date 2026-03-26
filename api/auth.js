@@ -1,30 +1,30 @@
 import { createHash } from 'crypto';
 
-// On utilise l'URL Redis que Vercel t'a donnée
-const KV_URL = process.env.KV_REDIS_URL; 
+// Utilisation directe des variables REST créées par Vercel
+const KV_REST_URL = process.env.KV_REST_API_URL;
+const KV_REST_TOKEN = process.env.KV_REST_API_TOKEN;
 
 async function kvGet(email) {
-  // On transforme l'URL redis:// en https:// pour l'API REST
-  const restUrl = KV_URL.replace('redis://', 'https://').split('@')[1];
-  const [host, token] = restUrl.split(':');
+  if (!KV_REST_URL || !KV_REST_TOKEN) throw new Error("Config Redis manquante");
   
-  const res = await fetch(`https://${host}/hgetall/user:${email}`, {
-    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN || token}` }
+  const res = await fetch(`${KV_REST_URL}/hgetall/user:${email}`, {
+    headers: { Authorization: `Bearer ${KV_REST_TOKEN}` }
   });
+  
   const data = await res.json();
   if (!data.result || data.result.length === 0) return null;
+  
   const obj = {};
-  for (let i = 0; i < data.result.length; i += 2) { obj[data.result[i]] = data.result[i + 1]; }
+  for (let i = 0; i < data.result.length; i += 2) {
+    obj[data.result[i]] = data.result[i + 1];
+  }
   return obj;
 }
 
 async function kvSet(email, userData) {
-  const restUrl = KV_URL.replace('redis://', 'https://').split('@')[1];
-  const [host, token] = restUrl.split(':');
-  
-  await fetch(`https://${host}/hset/user:${email}`, {
+  await fetch(`${KV_REST_URL}/hset/user:${email}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN || token}` },
+    headers: { Authorization: `Bearer ${KV_REST_TOKEN}` },
     body: JSON.stringify(userData)
   });
 }
@@ -39,23 +39,31 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   
-  const { action, email, password } = req.body || {};
-  const emailNorm = (email || '').toLowerCase().trim();
-  const user = await kvGet(emailNorm);
+  try {
+    const { action, email, password } = req.body || {};
+    const emailNorm = (email || '').toLowerCase().trim();
+    if (!emailNorm) return res.status(400).json({ error: 'Email manquant' });
 
-  if (action === 'register') {
-    if (user) return res.status(409).json({ error: 'Compte déjà existant.' });
-    await kvSet(emailNorm, { passwordHash: hashPwd(password), premium: "false" });
-    return res.status(200).json({ ok: true, email: emailNorm, premium: false });
-  }
+    const user = await kvGet(emailNorm);
 
-  if (action === 'login') {
-    if (!user || user.passwordHash !== hashPwd(password)) return res.status(401).json({ error: 'Identifiants incorrects.' });
-    return res.status(200).json({ ok: true, email: emailNorm, premium: user.premium === "true" });
-  }
+    if (action === 'register') {
+      if (user) return res.status(409).json({ error: 'Compte déjà existant.' });
+      await kvSet(emailNorm, { passwordHash: hashPwd(password), premium: "false" });
+      return res.status(200).json({ ok: true });
+    }
 
-  if (action === 'check') {
-    return res.status(200).json({ premium: user?.premium === "true" });
+    if (action === 'login') {
+      if (!user || user.passwordHash !== hashPwd(password)) return res.status(401).json({ error: 'Identifiants incorrects.' });
+      return res.status(200).json({ ok: true, email: emailNorm, premium: user.premium === "true" });
+    }
+
+    if (action === 'check') {
+      return res.status(200).json({ premium: user?.premium === "true" });
+    }
+    
+    return res.status(400).json({ error: 'Action inconnue' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Erreur serveur Redis" });
   }
-  return res.status(400).json({ error: 'Action inconnue' });
 }
