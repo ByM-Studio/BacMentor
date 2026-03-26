@@ -6,6 +6,7 @@
     "node": "24.x"
   },
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "crypto": "^1.0.1"
   }
 }
