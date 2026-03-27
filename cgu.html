@@ -23,12 +23,16 @@ nav a:hover{color:var(--ink);}
 .page-title em{font-style:italic;color:var(--sun);}
 .page-date{font-size:0.82rem;color:var(--ink-soft);}
 .legal-body{max-width:860px;margin:0 auto;padding:0 3rem 6rem;}
-.legal-section{margin-bottom:3rem;padding:2rem 2.5rem;background:white;border:1.5px solid var(--border);border-radius:20px;}
+.legal-section{margin-bottom:1.5rem;padding:2rem 2.5rem;background:white;border:1.5px solid var(--border);border-radius:20px;}
+.legal-section.highlight{background:linear-gradient(135deg,rgba(255,184,0,0.08),rgba(255,107,26,0.04));border-color:rgba(255,184,0,0.4);}
 .legal-section h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
 .legal-section p,.legal-section li{font-size:0.92rem;line-height:1.8;color:var(--ink-soft);margin-bottom:0.6rem;}
 .legal-section ul{padding-left:1.2rem;}
 .legal-section a{color:var(--ember);text-decoration:none;}
 .legal-section a:hover{text-decoration:underline;}
+.retractation-box{background:linear-gradient(135deg,rgba(74,229,128,0.1),rgba(74,229,128,0.05));border:2px solid rgba(74,229,128,0.35);border-radius:14px;padding:1.4rem 1.8rem;margin-top:1rem;}
+.retractation-box p{color:var(--ink);font-weight:500;}
+.retractation-box strong{color:#1a6640;}
 footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
 .foot-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:white;}
 .foot-logo .accent{color:var(--sun);font-style:italic;}
@@ -54,53 +58,117 @@ footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-
 <div class="page-hero">
   <span class="page-kicker">Règles d'utilisation</span>
   <h1 class="page-title">Conditions générales <em>d'utilisation</em></h1>
-  <p class="page-date">Dernière mise à jour : janvier 2026</p>
+  <p class="page-date">Dernière mise à jour : mars 2026</p>
 </div>
 
 <div class="legal-body">
+
   <div class="legal-section">
     <h2>1. Objet</h2>
-    <p>BacMentor est un site d'aide à la révision du Baccalauréat français, propulsé par intelligence artificielle. Les présentes CGU régissent l'accès et l'utilisation du service disponible sur bac-mentor.vercel.app.</p>
+    <p>BacMentor est un service d'aide à la révision du Baccalauréat français, propulsé par intelligence artificielle. Les présentes CGU régissent l'accès et l'utilisation du service disponible sur bac-mentor.vercel.app, édité par ByM-Studio.</p>
   </div>
 
   <div class="legal-section">
     <h2>2. Accès au service</h2>
-    <p>L'accès à BacMentor est <strong>gratuit</strong> dans sa version de base. Des fonctionnalités avancées pourront être proposées dans des formules payantes.</p>
+    <p>L'accès à BacMentor est <strong>gratuit</strong> dans sa version de base (plan Gratuit). Des fonctionnalités avancées sont proposées dans la formule <strong>BacMentor Premium</strong> au prix de <strong>5,00 € TTC par mois</strong>.</p>
     <p>Le service est accessible depuis tout navigateur web moderne. Aucune installation n'est requise.</p>
   </div>
 
   <div class="legal-section">
-    <h2>3. Nature des informations</h2>
-    <p>Les réponses générées par BacMentor sont fournies à <strong>titre indicatif et pédagogique uniquement</strong>. Elles ne sauraient se substituer aux cours officiels, aux manuels scolaires, ni à l'avis d'un enseignant qualifié.</p>
-    <p>L'éditeur ne garantit pas l'exactitude absolue des réponses générées par l'IA.</p>
+    <h2>3. Description du service Premium</h2>
+    <p>L'abonnement BacMentor Premium comprend :</p>
+    <ul>
+      <li>Accès illimité au coach IA pour toutes les matières du Baccalauréat</li>
+      <li>Messages illimités sans restriction journalière</li>
+      <li>Accès à toutes les filières (Générale, STI2D, STMG, STL, ST2S)</li>
+      <li>Upload d'images pour analyser des exercices</li>
+      <li>Disponibilité 24h/24, 7j/7</li>
+    </ul>
+    <p>L'abonnement est à <strong>renouvellement mensuel automatique</strong>. Il peut être résilié à tout moment depuis le tableau de bord Stripe ou en contactant le support.</p>
+  </div>
+
+  <div class="legal-section highlight">
+    <h2>4. Droit de rétractation</h2>
+    <p>Conformément à l'article L.221-18 du Code de la consommation, vous disposez d'un délai de <strong>14 jours</strong> à compter de la souscription pour exercer votre droit de rétractation, sans avoir à justifier de motifs ni à payer de pénalités.</p>
+
+    <div class="retractation-box">
+      <p>⚠️ <strong>Exception au droit de rétractation :</strong> Conformément à l'article L.221-28 du Code de la consommation, le droit de rétractation ne peut être exercé pour les contenus numériques dont l'exécution a commencé avant la fin du délai de rétractation, avec votre accord préalable exprès et votre renoncement à votre droit de rétractation.</p>
+      <p>En cliquant sur <strong>"Commencer"</strong> ou <strong>"Accéder au service"</strong> après votre paiement, vous reconnaissez expressément renoncer à votre droit de rétractation et demandez l'exécution immédiate du contrat.</p>
+    </div>
+
+    <p style="margin-top:1rem;">Si vous souhaitez exercer votre droit de rétractation avant d'avoir commencé à utiliser le service, vous pouvez nous contacter par email à <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a> en indiquant clairement votre demande de rétractation, votre nom et l'email associé à votre compte.</p>
+    <p>En cas de rétractation valide, le remboursement sera effectué dans un délai de <strong>14 jours</strong> suivant la réception de votre demande, via le même moyen de paiement que celui utilisé lors de la transaction.</p>
   </div>
 
   <div class="legal-section">
-    <h2>4. Obligations de l'utilisateur</h2>
+    <h2>5. Résiliation de l'abonnement</h2>
+    <p>Vous pouvez résilier votre abonnement Premium à tout moment, sans frais ni pénalité :</p>
+    <ul>
+      <li>En contactant le support à <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a></li>
+      <li>La résiliation prend effet à la fin de la période en cours déjà payée</li>
+      <li>Aucun remboursement n'est effectué pour la période en cours, sauf en cas de rétractation valide (voir article 4)</li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2>6. Prix et facturation</h2>
+    <p>Le prix de l'abonnement BacMentor Premium est de <strong>5,00 € TTC par mois</strong>. Ce prix inclut toutes les taxes applicables.</p>
+    <p>Le paiement est traité de manière sécurisée par <strong>Stripe</strong>. ByM-Studio ne stocke aucune donnée de carte bancaire.</p>
+    <p>En cas de modification tarifaire, les utilisateurs en cours d'abonnement seront informés au moins 30 jours à l'avance.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>7. Nature des informations fournies</h2>
+    <p>Les réponses générées par BacMentor sont fournies à <strong>titre indicatif et pédagogique uniquement</strong>. Elles ne sauraient se substituer aux cours officiels, aux manuels scolaires, ni à l'avis d'un enseignant qualifié.</p>
+    <p>L'éditeur ne garantit pas l'exactitude absolue des réponses générées par l'IA et ne saurait être tenu responsable des résultats scolaires de l'utilisateur.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>8. Obligations de l'utilisateur</h2>
     <p>En utilisant BacMentor, l'utilisateur s'engage à :</p>
     <ul>
       <li>Ne pas utiliser le service à des fins illicites ou contraires aux bonnes mœurs</li>
       <li>Ne pas tenter de contourner les limites d'utilisation</li>
       <li>Ne pas soumettre de contenus haineux, violents ou illégaux</li>
       <li>Faire un usage raisonnable et non abusif du service</li>
+      <li>Ne pas partager son compte avec des tiers</li>
     </ul>
   </div>
 
   <div class="legal-section">
-    <h2>5. Responsabilité</h2>
+    <h2>9. Responsabilité</h2>
     <p>ByM-Studio ne saurait être tenu responsable des résultats scolaires de l'utilisateur, ni des erreurs pouvant figurer dans les réponses générées automatiquement.</p>
+    <p>ByM-Studio s'engage à maintenir le service disponible au maximum, mais ne peut garantir une disponibilité de 100 % et ne saurait être tenu responsable d'interruptions temporaires du service.</p>
     <p>L'utilisation du service se fait sous la seule responsabilité de l'utilisateur.</p>
   </div>
 
   <div class="legal-section">
-    <h2>6. Modification des CGU</h2>
-    <p>ByM-Studio se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs seront informés des changements significatifs. La poursuite de l'utilisation du service vaut acceptation des nouvelles CGU.</p>
+    <h2>10. Données personnelles</h2>
+    <p>BacMentor collecte uniquement votre adresse email et les informations nécessaires au bon fonctionnement du service. Vos données ne sont jamais revendues à des tiers.</p>
+    <p>Pour en savoir plus, consultez notre <a href="/confidentialite.html">Politique de confidentialité</a>.</p>
   </div>
 
   <div class="legal-section">
-    <h2>7. Contact</h2>
-    <p>Pour toute question : <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a></p>
+    <h2>11. Droit applicable et litiges</h2>
+    <p>Les présentes CGU sont soumises au droit français. En cas de litige, une solution amiable sera recherchée en priorité.</p>
+    <p>Conformément aux articles L.611-1 et suivants du Code de la consommation, vous pouvez recourir gratuitement à un médiateur de la consommation. Vous pouvez également accéder à la plateforme de règlement en ligne des litiges de la Commission européenne : <a href="https://ec.europa.eu/consumers/odr" target="_blank">https://ec.europa.eu/consumers/odr</a>.</p>
+    <p>À défaut de résolution amiable, les tribunaux français seront compétents.</p>
   </div>
+
+  <div class="legal-section">
+    <h2>12. Modification des CGU</h2>
+    <p>ByM-Studio se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs seront informés des changements significatifs par email. La poursuite de l'utilisation du service vaut acceptation des nouvelles CGU.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>13. Contact</h2>
+    <p>Pour toute question relative aux présentes CGU ou au service :</p>
+    <ul>
+      <li>Email : <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a></li>
+      <li>Éditeur : ByM-Studio</li>
+    </ul>
+  </div>
+
 </div>
 
 <footer>
