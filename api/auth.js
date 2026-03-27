@@ -18,8 +18,6 @@ async function kvGet(email) {
 }
 
 async function kvSet(email, fields) {
-  // ✅ FIX : Upstash hset attend les champs dans l'URL ou en tableau
-  // Format correct pour l'API REST Upstash : /hset/key/field/value/field/value
   const pairs = Object.entries(fields)
     .map(([k, v]) => `/${encodeURIComponent(k)}/${encodeURIComponent(v)}`)
     .join('');
@@ -36,7 +34,9 @@ function hashPwd(pwd) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // ✅ CORRECTION : CORS restreint au domaine de production uniquement
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://bac-mentor.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     const emailNorm = (email || '').toLowerCase().trim();
     if (!emailNorm) return res.status(400).json({ error: 'Email manquant' });
 
-    // ✅ ACTION : register
+    // ── ACTION : register ─────────────────────────────────────────────────
     if (action === 'register') {
       if (!password || password.length < 6)
         return res.status(400).json({ error: 'Mot de passe trop court.' });
@@ -58,7 +58,6 @@ export default async function handler(req, res) {
         premium: 'false',
         createdAt: Date.now().toString()
       });
-      // ✅ FIX BUG PRINCIPAL : retourner email + premium comme login
       return res.status(200).json({
         ok: true,
         email: emailNorm,
@@ -67,7 +66,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ ACTION : login
+    // ── ACTION : login ────────────────────────────────────────────────────
     if (action === 'login') {
       const user = await kvGet(emailNorm);
       if (!user || user.passwordHash !== hashPwd(password))
@@ -80,7 +79,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ ACTION : check (vérifie le statut premium sans mot de passe)
+    // ── ACTION : check ────────────────────────────────────────────────────
     if (action === 'check') {
       const user = await kvGet(emailNorm);
       if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
@@ -92,10 +91,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ ACTION : activate-premium (appelé par le webhook Stripe)
+    // ── ACTION : activate-premium (appelé par le webhook Stripe) ──────────
     if (action === 'activate-premium') {
       const secret = req.headers['x-internal-secret'];
-      if (secret !== process.env.INTERNAL_SECRET)
+      // ✅ CORRECTION : plus de fallback hardcodé — si la variable manque, on refuse
+      if (!process.env.INTERNAL_SECRET || secret !== process.env.INTERNAL_SECRET)
         return res.status(403).json({ error: 'Non autorisé.' });
       const user = await kvGet(emailNorm);
       if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
@@ -103,6 +103,22 @@ export default async function handler(req, res) {
         ...user,
         premium: 'true',
         premiumSince: Date.now().toString()
+      });
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── ACTION : revoke-premium (appelé par le webhook Stripe) ────────────
+    if (action === 'revoke-premium') {
+      const secret = req.headers['x-internal-secret'];
+      // ✅ Même protection que activate-premium
+      if (!process.env.INTERNAL_SECRET || secret !== process.env.INTERNAL_SECRET)
+        return res.status(403).json({ error: 'Non autorisé.' });
+      const user = await kvGet(emailNorm);
+      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+      await kvSet(emailNorm, {
+        ...user,
+        premium: 'false',
+        premiumSince: ''
       });
       return res.status(200).json({ ok: true });
     }
