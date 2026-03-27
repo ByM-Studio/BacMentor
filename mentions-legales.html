@@ -24,11 +24,13 @@ nav a:hover{color:var(--ink);}
 .page-title em{font-style:italic;color:var(--sun);}
 .page-date{font-size:0.82rem;color:var(--ink-soft);}
 .legal-body{max-width:860px;margin:0 auto;padding:0 3rem 6rem;}
-.legal-section{margin-bottom:3rem;padding:2rem 2.5rem;background:white;border:1.5px solid var(--border);border-radius:20px;}
+.legal-section{margin-bottom:1.5rem;padding:2rem 2.5rem;background:white;border:1.5px solid var(--border);border-radius:20px;}
 .legal-section h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
 .legal-section p,.legal-section li{font-size:0.92rem;line-height:1.8;color:var(--ink-soft);margin-bottom:0.6rem;}
+.legal-section ul{padding-left:1.2rem;}
 .legal-section a{color:var(--ember);text-decoration:none;}
 .legal-section a:hover{text-decoration:underline;}
+.legal-section strong{color:var(--ink-mid);}
 footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
 .foot-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:white;}
 .foot-logo .accent{color:var(--sun);font-style:italic;}
@@ -40,6 +42,7 @@ footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-
 </style>
 </head>
 <body>
+
 <header>
   <a href="/" class="logo">Bac<span class="accent">Mentor</span><span class="logo-tag">IA</span></a>
   <nav>
@@ -54,37 +57,70 @@ footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-
 <div class="page-hero">
   <span class="page-kicker">Transparence & légalité</span>
   <h1 class="page-title">Mentions <em>légales</em></h1>
-  <p class="page-date">Dernière mise à jour : janvier 2026</p>
+  <p class="page-date">Dernière mise à jour : mars 2026</p>
 </div>
 
 <div class="legal-body">
+
   <div class="legal-section">
     <h2>1. Éditeur du site</h2>
     <p>Le site BacMentor (bac-mentor.vercel.app) est édité par :</p>
-    <p><strong>Mehdi Ayoune</strong><br>Particulier — auto-entrepreneur<br>Contact : <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a></p>
+    <p>
+      <strong>Mehdi Ayoune</strong><br>
+      Particulier<br>
+      4 Lotissement Clos du Verger<br>
+      01150 Lagnieu — France<br>
+      Email : <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a>
+    </p>
+    <p>Directeur de la publication : Mehdi Ayoune</p>
   </div>
 
   <div class="legal-section">
     <h2>2. Hébergement</h2>
     <p>Ce site est hébergé par :</p>
-    <p><strong>Vercel Inc.</strong><br>340 S Lemon Ave #4133<br>Walnut, CA 91789 — États-Unis<br><a href="https://vercel.com" target="_blank">vercel.com</a></p>
+    <p>
+      <strong>Vercel Inc.</strong><br>
+      340 S Lemon Ave #4133<br>
+      Walnut, CA 91789 — États-Unis<br>
+      <a href="https://vercel.com" target="_blank">vercel.com</a>
+    </p>
   </div>
 
   <div class="legal-section">
-    <h2>3. Propriété intellectuelle</h2>
-    <p>L'ensemble des contenus présents sur ce site (textes, graphismes, logo, interface, code) sont protégés par le droit d'auteur et sont la propriété exclusive de ByM-Studio.</p>
-    <p>Toute reproduction, représentation, modification ou exploitation, même partielle, sans autorisation écrite préalable est strictement interdite.</p>
+    <h2>3. Traitement des paiements</h2>
+    <p>Les paiements en ligne sont traités par :</p>
+    <p>
+      <strong>Stripe Payments Europe, Ltd.</strong><br>
+      1 Grand Canal Street Lower, Grand Canal Dock<br>
+      Dublin, D02 H210 — Irlande<br>
+      <a href="https://stripe.com/fr/privacy" target="_blank">stripe.com/fr/privacy</a>
+    </p>
+    <p>ByM-Studio ne stocke à aucun moment vos données de carte bancaire. Stripe est certifié PCI DSS niveau 1. En procédant au paiement, vous acceptez les <a href="https://stripe.com/fr/legal/ssa" target="_blank">conditions de service de Stripe</a>.</p>
   </div>
 
   <div class="legal-section">
-    <h2>4. Intelligence artificielle</h2>
-    <p>BacMentor utilise des modèles d'intelligence artificielle (Groq / LLaMA) pour générer des réponses pédagogiques. Ces réponses sont fournies à titre indicatif et ne sauraient remplacer l'avis d'un enseignant qualifié.</p>
+    <h2>4. Propriété intellectuelle</h2>
+    <p>L'ensemble des contenus présents sur ce site (textes, graphismes, logo, interface, code) sont protégés par le droit d'auteur et sont la propriété exclusive de Mehdi Ayoune / ByM-Studio.</p>
+    <p>Toute reproduction, représentation, modification ou exploitation, même partielle, sans autorisation écrite préalable est strictement interdite et constituerait une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.</p>
   </div>
 
   <div class="legal-section">
-    <h2>5. Contact</h2>
+    <h2>5. Intelligence artificielle</h2>
+    <p>BacMentor utilise des modèles d'intelligence artificielle (Groq / LLaMA) pour générer des réponses pédagogiques. Ces réponses sont fournies à titre indicatif et ne sauraient remplacer l'avis d'un enseignant qualifié ni se substituer aux cours officiels.</p>
+    <p>L'éditeur ne garantit pas l'exactitude absolue des réponses générées par l'IA.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>6. Médiation et litiges</h2>
+    <p>Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur peut recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige l'opposant à un professionnel.</p>
+    <p>Plateforme européenne de règlement en ligne des litiges : <a href="https://ec.europa.eu/consumers/odr" target="_blank">https://ec.europa.eu/consumers/odr</a></p>
+  </div>
+
+  <div class="legal-section">
+    <h2>7. Contact</h2>
     <p>Pour toute question relative au site : <a href="mailto:mehdi.webdesign01@gmail.com">mehdi.webdesign01@gmail.com</a></p>
   </div>
+
 </div>
 
 <footer>
@@ -97,5 +133,6 @@ footer{background:var(--ink);color:white;padding:2.5rem 3rem;display:flex;align-
     <a href="mailto:mehdi.webdesign01@gmail.com">Contact</a>
   </div>
 </footer>
+
 </body>
 </html>
