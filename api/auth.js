@@ -18,7 +18,9 @@ async function kvGet(email) {
 }
 
 async function kvSet(email, fields) {
+  // ✅ FIX : ignorer les champs avec valeur vide pour éviter les URLs malformées
   const pairs = Object.entries(fields)
+    .filter(([k, v]) => v !== '' && v !== null && v !== undefined)
     .map(([k, v]) => `/${encodeURIComponent(k)}/${encodeURIComponent(v)}`)
     .join('');
   await fetch(`${KV_URL}/hset/user:${email}${pairs}`, {
@@ -26,7 +28,6 @@ async function kvSet(email, fields) {
     headers: { Authorization: `Bearer ${KV_TOKEN}` }
   });
 }
-
 function hashPwd(pwd) {
   return createHash('sha256')
     .update(pwd + (process.env.PWD_SALT || 'bacmentor2026'))
