@@ -278,4 +278,15 @@ function showFiliere(id) {
     t.classList.remove('active');
   });
   // Afficher le bloc sélectionné
-  var block = document.getElementById('block-'
+  var block = document.getElementById('block-' + id);
+  if (block) block.classList.add('active');
+  // Activer l'onglet correspondant
+  document.querySelectorAll('.tab').forEach(function(t) {
+    if (t.getAttribute('onclick') === "showFiliere('" + id + "')") {
+      t.classList.add('active');
+    }
+  });
+}
+</script>
+</body>
+</html>
