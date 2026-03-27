@@ -1377,7 +1377,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem(LS_USER, JSON.stringify(APP.user));
         updateHeaderUser();      // ← ligne ajoutée
         updatePricingSection();  // ← ligne ajoutée
-        }catch(e){ /* offline — utiliser le cache */ }
+      }catch(e){ /* offline — utiliser le cache */ }
 
       // ✅ updateHeaderUser et updatePricingSection appelés APRÈS que APP.isPremium soit à jour
       updateHeaderUser();
