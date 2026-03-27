@@ -108,20 +108,21 @@ export default async function handler(req, res) {
     }
 
     // ── ACTION : revoke-premium (appelé par le webhook Stripe) ────────────
-    if (action === 'revoke-premium') {
-      const secret = req.headers['x-internal-secret'];
-      // ✅ Même protection que activate-premium
-      if (!process.env.INTERNAL_SECRET || secret !== process.env.INTERNAL_SECRET)
-        return res.status(403).json({ error: 'Non autorisé.' });
-      const user = await kvGet(emailNorm);
-      if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
-      await kvSet(emailNorm, {
-        ...user,
-        premium: 'false',
-        premiumSince: ''
-      });
-      return res.status(200).json({ ok: true });
-    }
+   if (action === 'revoke-premium') {
+  const secret = req.headers['x-internal-secret'];
+  if (!process.env.INTERNAL_SECRET || secret !== process.env.INTERNAL_SECRET)
+    return res.status(403).json({ error: 'Non autorisé.' });
+  const user = await kvGet(emailNorm);
+  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+  // ✅ FIX : on écrit chaque champ explicitement sans spread
+  await kvSet(emailNorm, {
+    passwordHash: user.passwordHash,
+    createdAt: user.createdAt,
+    premium: 'false',
+    premiumSince: ''
+  });
+  return res.status(200).json({ ok: true });
+}
 
     return res.status(400).json({ error: 'Action inconnue.' });
 
