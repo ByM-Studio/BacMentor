@@ -1375,7 +1375,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         APP.user.premium     = fresh.premium;
         APP.user.premiumSince = fresh.premiumSince;
         localStorage.setItem(LS_USER, JSON.stringify(APP.user));
-      }catch(e){ /* offline — utiliser le cache */ }
+        updateHeaderUser();      // ← ligne ajoutée
+        updatePricingSection();  // ← ligne ajoutée
+          }catch(e){ /* offline — utiliser le cache */ }
 
       // ✅ updateHeaderUser et updatePricingSection appelés APRÈS que APP.isPremium soit à jour
       updateHeaderUser();
