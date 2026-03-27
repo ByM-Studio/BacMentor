@@ -18,14 +18,18 @@ async function kvGet(email) {
 }
 
 async function kvSet(email, fields) {
-  // ✅ FIX : ignorer les champs avec valeur vide pour éviter les URLs malformées
-  const pairs = Object.entries(fields)
-    .filter(([k, v]) => v !== '' && v !== null && v !== undefined)
-    .map(([k, v]) => `/${encodeURIComponent(k)}/${encodeURIComponent(v)}`)
-    .join('');
-  await fetch(`${KV_URL}/hset/user:${email}${pairs}`, {
+  // ✅ FIX DÉFINITIF : utiliser PIPELINE Upstash avec body JSON
+  // au lieu de l'URL qui peut être malformée
+  const pipeline = Object.entries(fields).map(([k, v]) => [
+    'hset', `user:${email}`, k, String(v)
+  ]);
+  await fetch(`${KV_URL}/pipeline`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${KV_TOKEN}` }
+    headers: {
+      Authorization: `Bearer ${KV_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(pipeline)
   });
 }
 function hashPwd(pwd) {
