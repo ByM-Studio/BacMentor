@@ -119,7 +119,7 @@ export default async function handler(req, res) {
     passwordHash: user.passwordHash,
     createdAt: user.createdAt,
     premium: 'false',
-    premiumSince: ''
+    premiumSince: '0'
   });
   return res.status(200).json({ ok: true });
 }
