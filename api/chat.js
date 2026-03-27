@@ -1,3 +1,40 @@
+// ✅ Rate limiting en mémoire — gratuit, sans dépendance externe
+// Structure : { "ip_ou_email": { count: N, resetAt: timestamp } }
+const rateLimitMap = new Map();
+
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // fenêtre de 1 minute
+const RATE_LIMIT_MAX_FREE  = 8;          // 8 requêtes/min pour les utilisateurs gratuits
+const RATE_LIMIT_MAX_PREMIUM = 30;       // 30 requêtes/min pour les Premium
+
+function checkRateLimit(key, isPremium) {
+  const now = Date.now();
+  const max = isPremium ? RATE_LIMIT_MAX_PREMIUM : RATE_LIMIT_MAX_FREE;
+  const entry = rateLimitMap.get(key);
+
+  if (!entry || now > entry.resetAt) {
+    // Première requête ou fenêtre expirée → on repart à zéro
+    rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: max - 1 };
+  }
+
+  if (entry.count >= max) {
+    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    return { allowed: false, remaining: 0, retryAfter };
+  }
+
+  entry.count++;
+  return { allowed: true, remaining: max - entry.count };
+}
+
+// Nettoyage périodique pour éviter les fuites mémoire
+// (Vercel recrée les instances régulièrement donc ce n'est qu'une sécurité)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetAt) rateLimitMap.delete(key);
+  }
+}, 5 * 60 * 1000); // toutes les 5 minutes
+
 export default async function handler(req, res) {
   const API_KEY = process.env.GROQ_API_KEY;
 
@@ -11,10 +48,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { contents, systemInstruction } = req.body;
+    const { contents, systemInstruction, userEmail, isPremium } = req.body;
 
     if (!contents || !Array.isArray(contents)) {
       return res.status(400).json({ error: 'Corps de requête invalide.' });
+    }
+
+    // ✅ Rate limiting : on utilise l'email si dispo, sinon l'IP
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+             || req.socket?.remoteAddress
+             || 'unknown';
+    const rateLimitKey = userEmail ? `email:${userEmail}` : `ip:${ip}`;
+    const rl = checkRateLimit(rateLimitKey, !!isPremium);
+
+    if (!rl.allowed) {
+      return res.status(429).json({
+        error: `Trop de requêtes. Réessaie dans ${rl.retryAfter} secondes.`,
+        retryAfter: rl.retryAfter
+      });
     }
 
     // ── 1. DÉTECTION SUJETS SENSIBLES ──────────────────────────────────────
@@ -60,8 +111,7 @@ export default async function handler(req, res) {
     // ── 3. CONSTRUCTION DES MESSAGES ───────────────────────────────────────
     const messages = [];
 
-    // System prompt enrichi
-    const baseSystem    = systemInstruction?.parts?.[0]?.text || '';
+    const baseSystem     = systemInstruction?.parts?.[0]?.text || '';
     const enrichedSystem = baseSystem + `
 
 STYLE PÉDAGOGIQUE OBLIGATOIRE :
@@ -77,8 +127,6 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
     messages.push({ role: 'system', content: enrichedSystem });
 
     // ── 4. CONSTRUCTION DE L'HISTORIQUE & DÉTECTION IMAGE ─────────────────
-    // ✅ FIX CRITIQUE : l'ancienne version n'avait pas de branche "else"
-    // pour les messages texte simples → Groq recevait un historique vide
     let hasImage = false;
 
     for (const msg of contents) {
@@ -97,17 +145,13 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
         }
 
         if (contentParts.length === 0) {
-          // Sécurité : message vide, on l'ignore
           continue;
         } else if (contentParts.length === 1 && contentParts[0].type === 'text') {
-          // ✅ FIX : message texte simple → string directe (format Groq standard)
           messages.push({ role, content: contentParts[0].text });
         } else {
-          // Message multimodal (texte + image) → tableau de parts
           messages.push({ role, content: contentParts });
         }
       } else if (typeof msg.content === 'string') {
-        // Cas où le frontend envoie déjà content: string
         messages.push({ role, content: msg.content });
       }
     }
@@ -117,7 +161,7 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
       ? 'meta-llama/llama-4-scout-17b-16e-instruct'
       : 'llama-3.3-70b-versatile';
 
-    console.log(`[BacMentor] Appel Groq | modèle: ${model} | messages: ${messages.length} | image: ${hasImage}`);
+    console.log(`[BacMentor] Appel Groq | modèle: ${model} | messages: ${messages.length} | image: ${hasImage} | key: ${rateLimitKey}`);
 
     // ── 5. APPEL GROQ ──────────────────────────────────────────────────────
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -144,7 +188,7 @@ STYLE PÉDAGOGIQUE OBLIGATOIRE :
 
     const replyText = data.choices?.[0]?.message?.content || 'Pas de réponse.';
 
-    // Conversion réponse → format Gemini (frontend inchangé)
+    // Conversion réponse → format attendu par le frontend
     return res.status(200).json({
       candidates: [{
         content: {
