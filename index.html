@@ -1039,13 +1039,53 @@ function showToast(msg,d=3500){ const t=document.getElementById('toast'); t.text
    IMAGE UPLOAD
 ════════════════════════════════════════════════════════════ */
 let pendingImg=null, pendingName=null;
-function handleImageSelect(e){
+
+
+async function compressImage(file,maxW=900,q=0.75){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        const ratio=Math.min(maxW/img.width,1);
+        canvas.width=img.width*ratio; canvas.height=img.height*ratio;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        res(canvas.toDataURL('image/jpeg',q));
+      };
+      img.src=e.target.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+async function handleImageSelect(e){
   if(!APP.isPremium){ showToast('📎 Upload réservé au plan Premium !'); return; }
   const f=e.target.files[0]; if(!f) return;
-  if(f.size>4*1024*1024){ alert('Image trop lourde (max 4 Mo).'); e.target.value=''; return; }
-  const r=new FileReader();
-  r.onload=ev=>{
-    pendingImg=ev.target.result; pendingName=f.name;
+  showToast('⏳ Compression en cours…', 1500);
+  const compressed = await compressImage(f);
+  pendingImg=compressed; pendingName=f.name;
+  document.getElementById('image-preview-thumb').src=pendingImg;
+  document.getElementById('preview-name').textContent=f.name;
+  document.getElementById('image-preview-bar').style.display='flex';
+  document.getElementById('btn-upload').classList.add('has-image');
+  document.getElementById('chat-input').placeholder='Ajoute un commentaire ou envoie directement…';
+  e.target.value='';
+}
+
+async function handleImageSelectFS(e){
+  if(!APP.isPremium){ showToast('📎 Upload réservé au plan Premium !'); return; }
+  const f=e.target.files[0]; if(!f) return;
+  showToast('⏳ Compression en cours…', 1500);
+  const compressed = await compressImage(f);
+  fsPendingImg=compressed; fsPendingName=f.name;
+  document.getElementById('fs-image-preview-thumb').src=fsPendingImg;
+  document.getElementById('fs-preview-name').textContent=f.name;
+  document.getElementById('fs-image-preview-bar').style.display='flex';
+  document.getElementById('fs-btn-upload').classList.add('has-image');
+  document.getElementById('fs-chat-input').placeholder='Ajoute un commentaire…';
+  e.target.value='';
+}
     document.getElementById('image-preview-thumb').src=pendingImg;
     document.getElementById('preview-name').textContent=f.name;
     document.getElementById('image-preview-bar').style.display='flex';
