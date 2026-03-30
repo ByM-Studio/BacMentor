@@ -1086,14 +1086,7 @@ async function handleImageSelectFS(e){
   document.getElementById('fs-chat-input').placeholder='Ajoute un commentaire…';
   e.target.value='';
 }
-    document.getElementById('image-preview-thumb').src=pendingImg;
-    document.getElementById('preview-name').textContent=f.name;
-    document.getElementById('image-preview-bar').style.display='flex';
-    document.getElementById('btn-upload').classList.add('has-image');
-    document.getElementById('chat-input').placeholder='Ajoute un commentaire ou envoie directement…';
-  };
-  r.readAsDataURL(f); e.target.value='';
-}
+  
 function removeImage(){ pendingImg=null; pendingName=null; document.getElementById('image-preview-bar').style.display='none'; document.getElementById('btn-upload').classList.remove('has-image'); document.getElementById('chat-input').placeholder='Réponds à l\'exercice ou pose ta question…'; }
 
 /* ════════════════════════════════════════════════════════════
